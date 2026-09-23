@@ -3,8 +3,13 @@ const path = require('path');
 
 const distPath = path.join(__dirname, 'dist');
 const indexPath = path.join(distPath, 'index.html');
+const devIndexPath = path.join(distPath, 'index.dev.html');
 const notFoundPath = path.join(distPath, '404.html');
 const noJekyllPath = path.join(distPath, '.nojekyll');
+
+if (!fs.existsSync(indexPath) && fs.existsSync(devIndexPath)) {
+  fs.renameSync(devIndexPath, indexPath);
+}
 
 if (!fs.existsSync(indexPath)) {
   console.error('❌ index.html not found in dist/');
