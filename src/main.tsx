@@ -20,7 +20,9 @@ import { Settings } from './portal/pages/Settings';
 
 // Multiverse of Madness — the ZRK intranet portal, now its own standalone site.
 // Public gate (login/register) + an auth-guarded app (pathless guard keeps URLs flat).
-const router = createBrowserRouter([
+const basename = import.meta.env.BASE_URL.replace(/\/$/, '');
+const router = createBrowserRouter(
+  [
   {
     element: (
       <AuthProvider>
@@ -53,7 +55,9 @@ const router = createBrowserRouter([
       { path: '*', element: <Navigate to="/login" replace /> },
     ],
   },
-]);
+  ],
+  basename ? { basename } : undefined,
+);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <StrictMode>

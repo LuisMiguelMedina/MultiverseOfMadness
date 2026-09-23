@@ -1,10 +1,13 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// Standalone Multiverse of Madness portal, served at the domain root.
+// GitHub Pages project site: https://<user>.github.io/MultiverseOfMadness/
+const base =
+  process.env.GITHUB_PAGES === 'true' ? '/MultiverseOfMadness/' : '/';
+
 export default defineConfig({
   plugins: [react()],
-  base: '/',
+  base,
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
