@@ -12,7 +12,7 @@ export function Layout() {
   // Mobile sidebar state
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const menuItems = menuItemsForLevel(level);
+  const menuItems = menuItemsForLevel(level || 1);
 
   const toggleSidebar = (): void => setSidebarOpen((v) => !v);
   const closeSidebar = (): void => setSidebarOpen(false);
@@ -94,16 +94,26 @@ export function Layout() {
               </li>
             ))}
 
-            {/* Logout always visible */}
+            {/* Login / Logout action */}
             <li className="nav-item mt-3">
-              <a
-                className="nav-link"
-                onClick={handleLogout}
-                style={{ cursor: 'pointer' }}
-              >
-                <i className="fas fa-sign-out-alt" />
-                <span>Cerrar Sesión</span>
-              </a>
+              {session ? (
+                <a
+                  className="nav-link"
+                  onClick={handleLogout}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <i className="fas fa-sign-out-alt" />
+                  <span>Cerrar Sesión</span>
+                </a>
+              ) : (
+                <NavLink
+                  className="nav-link"
+                  to={`${PORTAL_BASE}/login`}
+                >
+                  <i className="fas fa-sign-in-alt" />
+                  <span>Acceso Agente</span>
+                </NavLink>
+              )}
             </li>
           </ul>
         </div>

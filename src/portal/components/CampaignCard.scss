@@ -1,0 +1,279 @@
+.campaign-card {
+  position: relative;
+  background: rgba(18, 18, 26, 0.75);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    border-color: rgba(0, 255, 255, 0.6);
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.25);
+    transform: translateY(-3px);
+  }
+
+  &.featured {
+    border: 1px solid rgba(0, 255, 255, 0.45);
+    background: linear-gradient(
+      145deg,
+      rgba(15, 20, 35, 0.9) 0%,
+      rgba(10, 12, 22, 0.95) 100%
+    );
+    box-shadow: 0 0 20px rgba(0, 128, 255, 0.2);
+
+    .campaign-banner {
+      height: 220px;
+    }
+  }
+
+  .campaign-banner {
+    position: relative;
+    height: 160px;
+    width: 100%;
+    background: #080a14;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.7;
+      transition: transform 0.5s ease;
+    }
+
+    .banner-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(10, 10, 15, 0.2) 0%, rgba(10, 10, 15, 0.95) 100%);
+    }
+
+    .banner-fallback {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle, rgba(0, 128, 255, 0.15) 0%, rgba(10, 10, 15, 0.9) 100%);
+      color: rgba(0, 255, 255, 0.4);
+      font-size: 3rem;
+    }
+
+    .campaign-status-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-family: var(--font-mono, monospace);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+
+      .status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+      }
+
+      &.status-active {
+        background: rgba(0, 255, 128, 0.15);
+        border: 1px solid #00ff80;
+        color: #00ff80;
+        box-shadow: 0 0 10px rgba(0, 255, 128, 0.3);
+
+        .status-dot {
+          background: #00ff80;
+          box-shadow: 0 0 8px #00ff80;
+        }
+      }
+
+      &.status-upcoming {
+        background: rgba(0, 204, 255, 0.15);
+        border: 1px solid #00ccff;
+        color: #00ccff;
+
+        .status-dot {
+          background: #00ccff;
+        }
+      }
+
+      &.status-development {
+        background: rgba(255, 170, 0, 0.15);
+        border: 1px solid #ffaa00;
+        color: #ffaa00;
+
+        .status-dot {
+          background: #ffaa00;
+        }
+      }
+
+      &.status-archived {
+        background: rgba(120, 120, 140, 0.2);
+        border: 1px solid #78788c;
+        color: #a0a0b0;
+
+        .status-dot {
+          background: #78788c;
+        }
+      }
+    }
+
+    .campaign-system-pill {
+      position: absolute;
+      bottom: 12px;
+      left: 14px;
+      background: rgba(0, 0, 0, 0.75);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      color: #00ffff;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 0.75rem;
+      font-family: var(--font-mono, monospace);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+  }
+
+  &:hover .campaign-banner img {
+    transform: scale(1.05);
+    opacity: 0.85;
+  }
+
+  .campaign-body {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    .campaign-title {
+      font-family: var(--font-mono, monospace);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+    }
+
+    .campaign-description {
+      font-size: 0.88rem;
+      color: #b0b4c8;
+      line-height: 1.45;
+      margin-bottom: 1rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .campaign-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 1rem;
+      padding: 8px 10px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+
+      .meta-item {
+        display: flex;
+        flex-direction: column;
+
+        .meta-label {
+          font-size: 0.7rem;
+          color: #707590;
+          text-transform: uppercase;
+          font-family: var(--font-mono, monospace);
+        }
+
+        .meta-value {
+          font-size: 0.82rem;
+          color: #e0e4f0;
+          font-weight: 500;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+
+    .campaign-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 1.25rem;
+
+      .tag-pill {
+        font-size: 0.7rem;
+        background: rgba(0, 128, 255, 0.15);
+        color: #70b8ff;
+        border: 1px solid rgba(0, 128, 255, 0.25);
+        padding: 2px 7px;
+        border-radius: 3px;
+      }
+    }
+
+    .campaign-actions {
+      margin-top: auto;
+      display: flex;
+      gap: 10px;
+
+      .btn-wiki {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        background: linear-gradient(135deg, rgba(0, 204, 255, 0.2) 0%, rgba(0, 128, 255, 0.3) 100%);
+        border: 1px solid #00ffff;
+        color: #00ffff;
+        padding: 8px 14px;
+        border-radius: 4px;
+        font-family: var(--font-mono, monospace);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.25s ease;
+
+        &:hover {
+          background: rgba(0, 255, 255, 0.3);
+          box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+          color: #ffffff;
+        }
+      }
+
+      .btn-foundry {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        background: rgba(255, 170, 0, 0.12);
+        border: 1px solid #ffaa00;
+        color: #ffaa00;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-family: var(--font-mono, monospace);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.25s ease;
+
+        &:hover {
+          background: rgba(255, 170, 0, 0.25);
+          box-shadow: 0 0 15px rgba(255, 170, 0, 0.4);
+          color: #ffffff;
+        }
+      }
+    }
+  }
+}

@@ -24,6 +24,18 @@ export function menuItemsForLevel(
   const perms = permissionsForLevel(level);
   const all: { to: string; icon: string; label: string; visible: boolean }[] = [
     {
+      to: `${PORTAL_BASE}/campaigns`,
+      icon: 'fas fa-dice-d20',
+      label: 'Campañas',
+      visible: true,
+    },
+    {
+      to: `${PORTAL_BASE}/wiki/bttf`,
+      icon: 'fas fa-book-journal-whills',
+      label: 'Wiki Lore',
+      visible: true,
+    },
+    {
       to: `${PORTAL_BASE}/dashboard`,
       icon: 'fas fa-tachometer-alt',
       label: 'Panel',

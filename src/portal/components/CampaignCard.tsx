@@ -1,0 +1,121 @@
+import { FC } from 'react';
+import { Link } from 'react-router-dom';
+import { CampaignBase, CampaignStatusType } from '../models/Campaigns/CampaignModels';
+import './CampaignCard.scss';
+
+export interface CampaignCardProps {
+  campaign: CampaignBase;
+  isFeatured?: boolean;
+}
+
+export const CampaignCard: FC<CampaignCardProps> = ({ campaign, isFeatured = false }) => {
+  const getStatusLabel = (status: CampaignStatusType): string => {
+    switch (status) {
+      case 'ACTIVE':
+        return 'Campaña Activa';
+      case 'UPCOMING':
+        return 'Próximamente';
+      case 'DEVELOPMENT':
+        return 'En Desarrollo';
+      case 'ARCHIVED':
+        return 'Archivada';
+      default:
+        return status;
+    }
+  };
+
+  const statusClass = `status-${campaign.CampaignStatus.toLowerCase()}`;
+
+  return (
+    <div className={`campaign-card ${isFeatured ? 'featured' : ''}`}>
+      <div className="campaign-banner">
+        {campaign.CampaignCoverUrl ? (
+          <img src={campaign.CampaignCoverUrl} alt={campaign.CampaignTitle} />
+        ) : (
+          <div className="banner-fallback">
+            <i className="fas fa-dice-d20" />
+          </div>
+        )}
+        <div className="banner-overlay" />
+
+        <div className={`campaign-status-badge ${statusClass}`}>
+          <span className="status-dot" />
+          {getStatusLabel(campaign.CampaignStatus)}
+        </div>
+
+        <div className="campaign-system-pill">
+          <i className="fas fa-microchip" />
+          <span>{campaign.CampaignSystem}</span>
+        </div>
+      </div>
+
+      <div className="campaign-body">
+        <h3 className="campaign-title">{campaign.CampaignTitle}</h3>
+        <p className="campaign-description">{campaign.CampaignDescription}</p>
+
+        <div className="campaign-meta-grid">
+          <div className="meta-item">
+            <span className="meta-label">Game Master</span>
+            <span className="meta-value" title={campaign.CampaignGameMaster}>
+              {campaign.CampaignGameMaster}
+            </span>
+          </div>
+
+          <div className="meta-item">
+            <span className="meta-label">Inicio / Ciclo</span>
+            <span className="meta-value">{campaign.CampaignStartDate || 'Por definir'}</span>
+          </div>
+
+          <div className="meta-item">
+            <span className="meta-label">Agentes / Jugadores</span>
+            <span className="meta-value">
+              {campaign.CampaignPlayerCount !== null ? `${campaign.CampaignPlayerCount} asignados` : 'TBD'}
+            </span>
+          </div>
+
+          <div className="meta-item">
+            <span className="meta-label">Sesiones</span>
+            <span className="meta-value">
+              {campaign.CampaignSessionCount !== null ? `${campaign.CampaignSessionCount} registradas` : '0'}
+            </span>
+          </div>
+        </div>
+
+        {campaign.CampaignTags.length > 0 && (
+          <div className="campaign-tags">
+            {campaign.CampaignTags.map((tag) => (
+              <span key={tag} className="tag-pill">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="campaign-actions">
+          <Link
+            to={`/wiki/${campaign.CampaignID}${
+              campaign.CampaignWikiHomeSlug ? `/${campaign.CampaignWikiHomeSlug}` : ''
+            }`}
+            className="btn-wiki"
+          >
+            <i className="fas fa-book-journal-whills" />
+            <span>Acceder a la Wiki</span>
+          </Link>
+
+          {campaign.CampaignFoundryUrl && (
+            <a
+              href={campaign.CampaignFoundryUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-foundry"
+              title="Abrir servidor de Foundry VTT"
+            >
+              <i className="fas fa-external-link-alt" />
+              <span>Foundry VTT</span>
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};

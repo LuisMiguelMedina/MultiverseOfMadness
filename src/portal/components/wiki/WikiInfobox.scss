@@ -1,0 +1,116 @@
+.wiki-infobox {
+  width: 320px;
+  float: right;
+  margin: 0 0 1.5rem 1.5rem;
+  background: rgba(14, 16, 26, 0.9);
+  border: 1px solid rgba(0, 255, 255, 0.35);
+  border-radius: 6px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.12);
+
+  @media (max-width: 991px) {
+    width: 100%;
+    float: none;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .infobox-header {
+    background: linear-gradient(135deg, rgba(0, 128, 255, 0.3) 0%, rgba(0, 255, 255, 0.15) 100%);
+    border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+    padding: 10px 14px;
+    text-align: center;
+
+    .infobox-type {
+      display: inline-block;
+      font-family: var(--font-mono, monospace);
+      font-size: 0.68rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #00ffff;
+      margin-bottom: 2px;
+    }
+
+    .infobox-title {
+      font-family: var(--font-mono, monospace);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0;
+      text-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+    }
+  }
+
+  .infobox-media {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(8, 10, 18, 0.6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    .token-frame {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 2px solid #00ffff;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.35);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000000;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .media-caption {
+      font-size: 0.75rem;
+      color: #8a92b0;
+      margin-top: 8px;
+      text-align: center;
+      font-family: var(--font-mono, monospace);
+    }
+  }
+
+  .infobox-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+
+    tr {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:nth-child(even) {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      th {
+        width: 40%;
+        padding: 8px 10px;
+        color: #7282a8;
+        font-family: var(--font-mono, monospace);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        vertical-align: top;
+      }
+
+      td {
+        width: 60%;
+        padding: 8px 10px;
+        color: #e0e4f4;
+        font-weight: 500;
+        vertical-align: top;
+      }
+    }
+  }
+}
