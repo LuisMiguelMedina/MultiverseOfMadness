@@ -1,0 +1,576 @@
+/* =========================================================
+   CAMPAIGN SELECTOR CAROUSEL - Centralized 3D Card Stage
+   ========================================================= */
+
+.campaign-carousel-wrapper {
+  position: relative;
+  width: 100%;
+  margin: 1rem 0 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  /* HUD status bar above carousel */
+  .carousel-status-bar {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 1.25rem;
+    margin-bottom: 1rem;
+    background: rgba(10, 15, 30, 0.6);
+    border: 1px solid rgba(0, 255, 255, 0.15);
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: #8c9ac0;
+
+    .status-indicator-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .pulsing-radar-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #00ffff;
+        box-shadow: 0 0 10px #00ffff;
+        animation: pulse-radar 2s infinite ease-in-out;
+      }
+
+      .status-label {
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #b0c2e8;
+      }
+    }
+
+    .status-counter-right {
+      letter-spacing: 0.05em;
+
+      strong {
+        color: #00ffff;
+      }
+    }
+  }
+
+  /* Main stage holding the arrows and cards */
+  .carousel-stage {
+    position: relative;
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    min-height: 540px;
+
+    @media (max-width: 600px) {
+      gap: 0.5rem;
+    }
+
+    /* Navigation Arrows */
+    .carousel-nav-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(8, 12, 24, 0.85);
+      border: 1px solid rgba(0, 255, 255, 0.4);
+      color: #00ffff;
+      font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.15);
+      z-index: 10;
+      flex-shrink: 0;
+
+      &:hover {
+        background: rgba(0, 255, 255, 0.2);
+        border-color: #00ffff;
+        color: #ffffff;
+        box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+        transform: scale(1.12);
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+
+      @media (max-width: 768px) {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+    }
+
+    /* The viewport containing cards */
+    .carousel-track {
+      position: relative;
+      width: 100%;
+      height: 540px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+    }
+  }
+
+  /* ---------------- CARD BASE ---------------- */
+  .carousel-card {
+    width: 440px;
+    max-width: calc(100vw - 120px);
+    height: 520px;
+    background: linear-gradient(
+      145deg,
+      rgba(15, 20, 36, 0.95) 0%,
+      rgba(8, 10, 20, 0.98) 50%,
+      rgba(12, 16, 30, 0.95) 100%
+    );
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    user-select: none;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+
+    @media (max-width: 600px) {
+      max-width: calc(100vw - 90px);
+      height: 500px;
+    }
+
+    /* Center Card: fully active & elevated */
+    &.card-pos-center {
+      position: relative;
+      z-index: 6;
+      opacity: 1;
+      transform: scale(1);
+      border: 1px solid rgba(0, 255, 255, 0.5);
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85), 0 0 30px rgba(0, 255, 255, 0.22);
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 14px;
+        border: 1px solid rgba(0, 255, 255, 0.4);
+        pointer-events: none;
+      }
+    }
+
+    /* Side Cards (Peeking on left & right) */
+    &.card-pos-prev {
+      position: absolute;
+      left: calc(50% - 320px);
+      transform: translateX(-50%) scale(0.84);
+      z-index: 2;
+      opacity: 0.35;
+      filter: blur(0.5px) brightness(0.65);
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+
+      &:hover {
+        opacity: 0.6;
+        filter: brightness(0.85);
+        transform: translateX(-50%) scale(0.87);
+      }
+
+      @media (max-width: 900px) {
+        display: none;
+      }
+    }
+
+    &.card-pos-next {
+      position: absolute;
+      right: calc(50% - 320px);
+      transform: translateX(50%) scale(0.84);
+      z-index: 2;
+      opacity: 0.35;
+      filter: blur(0.5px) brightness(0.65);
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+
+      &:hover {
+        opacity: 0.6;
+        filter: brightness(0.85);
+        transform: translateX(50%) scale(0.87);
+      }
+
+      @media (max-width: 900px) {
+        display: none;
+      }
+    }
+
+    /* ---------------- WORLD CARD CONTENT ---------------- */
+    &.world-card {
+      .card-header-banner {
+        position: relative;
+        height: 185px;
+        width: 100%;
+        overflow: hidden;
+        background: #04060c;
+
+        @media (max-width: 600px) {
+          height: 160px;
+        }
+
+        .banner-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.4s ease;
+        }
+
+        .banner-fallback-grid {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: radial-gradient(circle, rgba(0, 150, 255, 0.15) 0%, rgba(4, 6, 14, 0.95) 75%);
+
+          .fallback-icon {
+            font-size: 3.5rem;
+            color: rgba(0, 255, 255, 0.3);
+          }
+        }
+
+        .banner-overlay-gradient {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.2) 0%,
+            rgba(10, 14, 26, 0.7) 60%,
+            rgba(10, 14, 26, 1) 100%
+          );
+        }
+
+        .banner-top-tags {
+          position: absolute;
+          top: 12px;
+          left: 12px;
+          right: 12px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          z-index: 2;
+
+          .badge-status {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+
+            &.status-active {
+              background: rgba(46, 204, 113, 0.15);
+              border: 1px solid #2ecc71;
+              color: #2ecc71;
+              box-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
+            }
+
+            &.status-upcoming {
+              background: rgba(255, 170, 0, 0.15);
+              border: 1px solid #ffaa00;
+              color: #ffaa00;
+            }
+
+            &.status-dev {
+              background: rgba(170, 85, 255, 0.15);
+              border: 1px solid #aa55ff;
+              color: #d4aaff;
+            }
+
+            &.status-archived {
+              background: rgba(150, 150, 150, 0.15);
+              border: 1px solid #888888;
+              color: #aaaaaa;
+            }
+          }
+
+          .badge-system-pill {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #b0c2e8;
+            padding: 3px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+          }
+        }
+      }
+
+      .card-main-body {
+        padding: 1.25rem 1.4rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+
+        @media (max-width: 600px) {
+          padding: 1rem 1.1rem;
+        }
+
+        .card-title-group {
+          margin-bottom: 0.75rem;
+
+          .card-world-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: #00ffff;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            display: block;
+            margin-bottom: 2px;
+          }
+
+          .card-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+
+        .card-description {
+          font-size: 0.85rem;
+          color: #8c9ac0;
+          line-height: 1.45;
+          margin-bottom: 1rem;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        /* 4-cell HUD Grid */
+        .card-hud-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 6px;
+          padding: 8px 10px;
+          background: rgba(4, 6, 14, 0.55);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 6px;
+          margin-bottom: auto;
+
+          .hud-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+
+            .hud-label {
+              font-family: 'JetBrains Mono', monospace;
+              font-size: 0.65rem;
+              color: #6c7899;
+              text-transform: uppercase;
+            }
+
+            .hud-value {
+              font-size: 0.78rem;
+              color: #c4d2ee;
+              font-weight: 600;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+          }
+        }
+
+        /* Action Buttons */
+        .card-actions-row {
+          display: flex;
+          gap: 8px;
+          margin-top: 1rem;
+          padding-top: 0.75rem;
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+          a,
+          button {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+
+          .btn-card-wiki {
+            background: rgba(0, 255, 255, 0.12);
+            border: 1px solid #00ffff;
+            color: #00ffff;
+
+            &:hover {
+              background: #00ffff;
+              color: #070913;
+              box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+            }
+          }
+
+          .btn-card-foundry {
+            background: linear-gradient(135deg, rgba(255, 170, 0, 0.2) 0%, rgba(255, 102, 0, 0.2) 100%);
+            border: 1px solid #ffaa00;
+            color: #ffaa00;
+
+            &:hover {
+              background: #ffaa00;
+              color: #070913;
+              box-shadow: 0 0 15px rgba(255, 170, 0, 0.4);
+            }
+          }
+
+          .btn-card-disabled {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #65718a;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+
+    /* ---------------- ADD NEW WORLD CARD ---------------- */
+    &.add-slot-card {
+      border: 1px dashed rgba(0, 255, 255, 0.45);
+      background: radial-gradient(circle at center, rgba(0, 255, 255, 0.05) 0%, rgba(8, 12, 22, 0.95) 75%);
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2.5rem 2rem;
+
+      .add-slot-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .add-icon-halo {
+          width: 68px;
+          height: 68px;
+          border-radius: 50%;
+          background: rgba(0, 255, 255, 0.1);
+          border: 1px solid #00ffff;
+          color: #00ffff;
+          font-size: 1.8rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 1.25rem;
+          box-shadow: 0 0 20px rgba(0, 255, 255, 0.25);
+          transition: all 0.3s ease;
+        }
+
+        .slot-badge {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 0.72rem;
+          color: #8fa0c4;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          margin-bottom: 0.5rem;
+        }
+
+        .slot-title {
+          font-family: 'Space Grotesk', sans-serif;
+          font-size: 1.35rem;
+          font-weight: 700;
+          color: #ffffff;
+          margin: 0 0 0.75rem;
+        }
+
+        .slot-desc {
+          font-size: 0.85rem;
+          color: #8c9ac0;
+          line-height: 1.5;
+          margin: 0 0 1.5rem;
+          max-width: 320px;
+        }
+
+        .btn-add-action {
+          padding: 8px 18px;
+          border-radius: 6px;
+          background: rgba(0, 255, 255, 0.15);
+          border: 1px solid #00ffff;
+          color: #00ffff;
+          font-family: 'Space Grotesk', sans-serif;
+          font-size: 0.85rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.25s ease;
+
+          &:hover {
+            background: #00ffff;
+            color: #070913;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+          }
+        }
+      }
+
+      &:hover .add-icon-halo {
+        transform: scale(1.1) rotate(90deg);
+        background: rgba(0, 255, 255, 0.25);
+      }
+    }
+  }
+
+  /* ---------------- PAGINATION PIPS ---------------- */
+  .carousel-pips-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 1.5rem;
+
+    .pip-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+      &:hover {
+        background: rgba(0, 255, 255, 0.5);
+      }
+
+      &.active {
+        width: 30px;
+        border-radius: 5px;
+        background: #00ffff;
+        box-shadow: 0 0 12px #00ffff;
+      }
+    }
+  }
+}
+
+@keyframes pulse-radar {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 255, 255, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(0, 255, 255, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 255, 255, 0);
+  }
+}
