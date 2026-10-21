@@ -9,6 +9,16 @@ export interface WikiContentRendererProps {
   resolveSlug: (target: string) => string;
 }
 
+type RenderElement =
+  | { type: 'h2'; text: string }
+  | { type: 'h3'; text: string }
+  | { type: 'h4'; text: string }
+  | { type: 'p'; text: string }
+  | { type: 'ul'; items: string[] }
+  | { type: 'ol'; items: string[] }
+  | { type: 'blockquote'; text: string }
+  | { type: 'table'; headers: string[]; rows: string[][] };
+
 function slugify(text: string): string {
   return text
     .normalize('NFD')
@@ -26,36 +36,144 @@ export const WikiContentRenderer: FC<WikiContentRendererProps> = ({
   categories,
   resolveSlug,
 }) => {
-  const renderedElements = useMemo(() => {
+  const renderedElements = useMemo<RenderElement[]>(() => {
     // 1. Clean content of infoboxes, redirects, and meta templates
-    let clean = content
+    const clean = content
       .replace(/\{\{[Ii]nfobox[\s\S]*?\}\}/gi, '')
       .replace(/#REDIRECCI[OÓ]N\s*\[\[.*?\]\]/gi, '')
       .replace(/\{\{ORDENAR:.*?\}\}/gi, '')
       .replace(/<mainpage-leftcolumn-start\s*\/>/gi, '')
       .replace(/<center><inputbox>[\s\S]*?<\/inputbox><\/center>/gi, '')
       .replace(/\[\[Categor[ií]a:.*?\]\]/gi, '')
-      .replace(/\[\[Category:.*?\]\]/gi, '');
+      .replace(/\[\[Category:.*?\]\]/gi, '')
+      .replace(/\ufffd+/g, ' ');
 
-    // Split into lines
     const lines = clean.split('\n');
-    const elements: Array<{
-      type: 'h2' | 'h3' | 'h4' | 'p' | 'li' | 'blockquote';
-      text: string;
-    }> = [];
+    const elements: RenderElement[] = [];
 
     let inBlockquote = false;
     let blockquoteBuffer: string[] = [];
 
+    let inTable = false;
+    let tableHeaders: string[] = [];
+    let tableRows: string[][] = [];
+    let currentRow: string[] = [];
+
+    let currentList: { type: 'ul' | 'ol'; items: string[] } | null = null;
+
+    const flushList = () => {
+      if (currentList && currentList.items.length > 0) {
+        elements.push(currentList);
+        currentList = null;
+      }
+    };
+
+    const flushTable = () => {
+      if (currentRow.length > 0) {
+        tableRows.push(currentRow);
+        currentRow = [];
+      }
+      if (tableHeaders.length > 0 || tableRows.length > 0) {
+        elements.push({
+          type: 'table',
+          headers: tableHeaders,
+          rows: tableRows,
+        });
+      }
+      tableHeaders = [];
+      tableRows = [];
+      inTable = false;
+    };
+
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
+      const rawLine = lines[i];
+      const line = rawLine.trim();
 
-      if (!line) continue;
+      if (!line) {
+        flushList();
+        continue;
+      }
 
-      if (line.toLowerCase().includes('<blockquote>')) {
-        inBlockquote = true;
-        const text = line.replace(/<blockquote>/gi, '').replace(/<\/blockquote>/gi, '');
-        if (text) blockquoteBuffer.push(text);
+      // Wikitable handling: {| ... |}
+      if (line.startsWith('{|')) {
+        flushList();
+        inTable = true;
+        tableHeaders = [];
+        tableRows = [];
+        currentRow = [];
+        continue;
+      }
+
+      if (inTable) {
+        if (line.startsWith('|}')) {
+          flushTable();
+          continue;
+        }
+        if (line.startsWith('|-')) {
+          if (currentRow.length > 0) {
+            tableRows.push(currentRow);
+            currentRow = [];
+          }
+          continue;
+        }
+        if (line.startsWith('!')) {
+          const headerText = line.substring(1).trim();
+          const headers = headerText.split('!!').map((h) => h.trim());
+          tableHeaders.push(...headers);
+          continue;
+        }
+        if (line.startsWith('|')) {
+          const cellText = line.substring(1).trim();
+          const cells = cellText.split('||').map((c) => c.trim());
+          currentRow.push(...cells);
+          continue;
+        }
+        continue;
+      }
+
+      // Markdown Table handling: | Col | Col |
+      if (line.startsWith('|') && line.endsWith('|') && i + 1 < lines.length) {
+        const nextLine = lines[i + 1].trim();
+        if (/^\|(?:\s*[:-]+[-| :]*)\|$/.test(nextLine)) {
+          flushList();
+          const headers = line
+            .slice(1, -1)
+            .split('|')
+            .map((h) => h.trim());
+          const rows: string[][] = [];
+          i += 1; // skip separator line
+          while (
+            i + 1 < lines.length &&
+            lines[i + 1].trim().startsWith('|') &&
+            lines[i + 1].trim().endsWith('|')
+          ) {
+            i += 1;
+            const rowLine = lines[i].trim();
+            const cells = rowLine
+              .slice(1, -1)
+              .split('|')
+              .map((c) => c.trim());
+            rows.push(cells);
+          }
+          elements.push({
+            type: 'table',
+            headers,
+            rows,
+          });
+          continue;
+        }
+      }
+
+      // Blockquote handling: <blockquote>...</blockquote>
+      if (line.toLowerCase().includes('<blockquote>') || inBlockquote) {
+        flushList();
+        if (!inBlockquote) {
+          inBlockquote = true;
+        }
+        const stripped = line.replace(/<\/?blockquote>/gi, '').trim();
+        if (stripped) {
+          blockquoteBuffer.push(stripped);
+        }
         if (line.toLowerCase().includes('</blockquote>')) {
           inBlockquote = false;
           elements.push({ type: 'blockquote', text: blockquoteBuffer.join(' ') });
@@ -64,93 +182,156 @@ export const WikiContentRenderer: FC<WikiContentRendererProps> = ({
         continue;
       }
 
-      if (inBlockquote) {
-        if (line.toLowerCase().includes('</blockquote>')) {
-          inBlockquote = false;
-          const text = line.replace(/<\/blockquote>/gi, '');
-          if (text) blockquoteBuffer.push(text);
-          elements.push({ type: 'blockquote', text: blockquoteBuffer.join(' ') });
-          blockquoteBuffer = [];
+      // Markdown blockquote: > quote
+      if (line.startsWith('>')) {
+        flushList();
+        elements.push({ type: 'blockquote', text: line.replace(/^>\s*/, '').trim() });
+        continue;
+      }
+
+      // Bullet lists: *, -
+      if (/^[\*\-]\s+/.test(line)) {
+        const itemText = line.replace(/^[\*\-]\s+/, '').trim();
+        if (!currentList || currentList.type !== 'ul') {
+          flushList();
+          currentList = { type: 'ul', items: [itemText] };
         } else {
-          blockquoteBuffer.push(line);
+          currentList.items.push(itemText);
         }
         continue;
       }
 
-      // Check headings
+      // Numbered/Roman lists: I. or 1.
+      if (/^([0-9]+\.|[IVXLCDM]+\.)\s+/.test(line) && !/^\d+\.\d+/.test(line)) {
+        if (!currentList || currentList.type !== 'ol') {
+          flushList();
+          currentList = { type: 'ol', items: [line] };
+        } else {
+          currentList.items.push(line);
+        }
+        continue;
+      }
+
+      flushList();
+
+      // Headings
       if (line.startsWith('====') && line.endsWith('====')) {
         elements.push({ type: 'h4', text: line.replace(/====/g, '').trim() });
       } else if (line.startsWith('===') && line.endsWith('===')) {
         elements.push({ type: 'h3', text: line.replace(/===/g, '').trim() });
       } else if (line.startsWith('==') && line.endsWith('==')) {
         elements.push({ type: 'h2', text: line.replace(/==/g, '').trim() });
-      } else if (line.startsWith('*')) {
-        elements.push({ type: 'li', text: line.replace(/^\*+\s*/, '') });
+      } else if (line.startsWith('#### ')) {
+        elements.push({ type: 'h4', text: line.substring(5).trim() });
+      } else if (line.startsWith('### ')) {
+        elements.push({ type: 'h3', text: line.substring(4).trim() });
+      } else if (line.startsWith('## ')) {
+        elements.push({ type: 'h2', text: line.substring(3).trim() });
+      } else if (line.startsWith('# ')) {
+        elements.push({ type: 'h2', text: line.substring(2).trim() });
+      } else if (/^\d+\.\d+\.\d+\.?\s+[A-Za-z0-9]/.test(line)) {
+        elements.push({ type: 'h4', text: line.trim() });
+      } else if (/^\d+\.\d+\.?\s+[A-Za-z0-9]/.test(line)) {
+        elements.push({ type: 'h3', text: line.trim() });
+      } else if (/^\d+\.\s+[A-Z]/.test(line) && line.length < 80) {
+        elements.push({ type: 'h2', text: line.trim() });
       } else {
         elements.push({ type: 'p', text: line });
       }
     }
 
+    flushList();
+    if (inTable) flushTable();
+
     return elements;
   }, [content]);
 
-  // Helper to parse formatting (bold, italic, wiki links) in text
-  const parseInlineMarkup = (text: string) => {
-    // Replace bold and italics
-    const formatted = text;
+  // Helper to parse formatting (bold, italic, wiki links, code, spans, line breaks) in text
+  const parseInlineMarkup = (text: string): ReactNode => {
+    const tokenRegex =
+      /(\[\[(?:[^\]|]+)(?:\|[^\]]+)?\]\]|<span\s+style="[^"]*">.*?<\/span>|`[^`]+`|'''[\s\S]+?'''|\*\*[\s\S]+?\*\*|''[\s\S]+?''|\*(?!\s)[\s\S]+?(?<!\s)\*|<br\s*\/?>)/g;
 
-    // Split by wiki links [[Target|Label]] or [[Target]]
-    const linkRegex = /\[\[(.*?)(?:\|(.*?))?\]\]/g;
-    const parts: Array<string | ReactNode> = [];
     let lastIndex = 0;
     let match: RegExpExecArray | null;
+    const nodes: ReactNode[] = [];
+    let keyIdx = 0;
 
-    while ((match = linkRegex.exec(formatted)) !== null) {
+    while ((match = tokenRegex.exec(text)) !== null) {
       if (match.index > lastIndex) {
-        parts.push(formatted.substring(lastIndex, match.index));
+        nodes.push(text.substring(lastIndex, match.index));
       }
 
-      const targetRaw = match[1];
-      const label = match[2] || targetRaw;
-      const targetSlug = resolveSlug(slugify(targetRaw));
+      const token = match[0];
+      if (token.startsWith('[[')) {
+        const inner = token.substring(2, token.length - 2);
+        const parts = inner.split('|');
+        const targetRaw = parts[0].trim();
+        const label = parts[1] ? parts[1].trim() : targetRaw;
+        const targetSlug = resolveSlug(slugify(targetRaw));
+        nodes.push(
+          <Link
+            key={`link-${keyIdx++}`}
+            to={`/wiki/${campaignID}/${targetSlug}`}
+            className="wiki-internal-link"
+          >
+            {label}
+          </Link>,
+        );
+      } else if (token.startsWith('<span')) {
+        const colorMatch = /color:\s*([^;"]+)/i.exec(token);
+        const contentMatch = />(.*?)<\/span>/i.exec(token);
+        const color = colorMatch ? colorMatch[1].trim() : undefined;
+        const innerContent = contentMatch ? contentMatch[1] : '';
+        nodes.push(
+          <span
+            key={`span-${keyIdx++}`}
+            style={color ? { color, fontWeight: 600 } : undefined}
+          >
+            {parseInlineMarkup(innerContent)}
+          </span>,
+        );
+      } else if (token.startsWith('`')) {
+        nodes.push(
+          <code key={`code-${keyIdx++}`} className="wiki-inline-code">
+            {token.substring(1, token.length - 1)}
+          </code>,
+        );
+      } else if (token.startsWith("'''")) {
+        nodes.push(
+          <strong key={`bold-${keyIdx++}`}>
+            {token.substring(3, token.length - 3)}
+          </strong>,
+        );
+      } else if (token.startsWith('**')) {
+        nodes.push(
+          <strong key={`bold-${keyIdx++}`}>
+            {token.substring(2, token.length - 2)}
+          </strong>,
+        );
+      } else if (token.startsWith("''")) {
+        nodes.push(
+          <em key={`italic-${keyIdx++}`}>
+            {token.substring(2, token.length - 2)}
+          </em>,
+        );
+      } else if (token.startsWith('*')) {
+        nodes.push(
+          <em key={`italic-${keyIdx++}`}>
+            {token.substring(1, token.length - 1)}
+          </em>,
+        );
+      } else if (/^<br\s*\/?>$/i.test(token)) {
+        nodes.push(<br key={`br-${keyIdx++}`} />);
+      }
 
-      parts.push(
-        <Link
-          key={`${targetSlug}-${match.index}`}
-          to={`/wiki/${campaignID}/${targetSlug}`}
-          className="wiki-internal-link"
-        >
-          {label}
-        </Link>,
-      );
-
-      lastIndex = linkRegex.lastIndex;
+      lastIndex = tokenRegex.lastIndex;
     }
 
-    if (lastIndex < formatted.length) {
-      parts.push(formatted.substring(lastIndex));
+    if (lastIndex < text.length) {
+      nodes.push(text.substring(lastIndex));
     }
 
-    // Process bold '''text''' and italic ''text'' in string fragments
-    return parts.map((part, idx) => {
-      if (typeof part !== 'string') return part;
-
-      // Handle bold
-      const boldParts = part.split(/'''/g);
-      return boldParts.map((bPart, bIdx) => {
-        if (bIdx % 2 === 1) {
-          return <strong key={`b-${idx}-${bIdx}`}>{bPart}</strong>;
-        }
-        // Handle italic
-        const italicParts = bPart.split(/''/g);
-        return italicParts.map((iPart, iIdx) => {
-          if (iIdx % 2 === 1) {
-            return <em key={`i-${idx}-${bIdx}-${iIdx}`}>{iPart}</em>;
-          }
-          return iPart;
-        });
-      });
-    });
+    return nodes;
   };
 
   return (
@@ -165,11 +346,46 @@ export const WikiContentRenderer: FC<WikiContentRendererProps> = ({
             return <h4 key={index}>{parseInlineMarkup(el.text)}</h4>;
           case 'blockquote':
             return <blockquote key={index}>{parseInlineMarkup(el.text)}</blockquote>;
-          case 'li':
+          case 'ul':
             return (
               <ul key={index}>
-                <li>{parseInlineMarkup(el.text)}</li>
+                {el.items.map((item, iIdx) => (
+                  <li key={iIdx}>{parseInlineMarkup(item)}</li>
+                ))}
               </ul>
+            );
+          case 'ol':
+            return (
+              <ol key={index}>
+                {el.items.map((item, iIdx) => (
+                  <li key={iIdx}>{parseInlineMarkup(item)}</li>
+                ))}
+              </ol>
+            );
+          case 'table':
+            return (
+              <div key={index} className="wiki-table-container">
+                <table className="wiki-table">
+                  {el.headers.length > 0 && (
+                    <thead>
+                      <tr>
+                        {el.headers.map((h, hi) => (
+                          <th key={hi}>{parseInlineMarkup(h)}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                  )}
+                  <tbody>
+                    {el.rows.map((row, ri) => (
+                      <tr key={ri}>
+                        {row.map((cell, ci) => (
+                          <td key={ci}>{parseInlineMarkup(cell)}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             );
           case 'p':
           default:
