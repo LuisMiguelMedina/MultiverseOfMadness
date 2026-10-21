@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CampaignBase, CampaignStatusType } from '../models/Campaigns/CampaignModels';
 import './CampaignCard.scss';
@@ -9,6 +9,8 @@ export interface CampaignCardProps {
 }
 
 export const CampaignCard: FC<CampaignCardProps> = ({ campaign, isFeatured = false }) => {
+  const [imgError, setImgError] = useState(false);
+
   const getStatusLabel = (status: CampaignStatusType): string => {
     switch (status) {
       case 'ACTIVE':
@@ -26,16 +28,29 @@ export const CampaignCard: FC<CampaignCardProps> = ({ campaign, isFeatured = fal
 
   const statusClass = `status-${campaign.CampaignStatus.toLowerCase()}`;
 
+  // Default sci-fi backdrop gradient if no image or error
+  const renderBanner = () => {
+    if (campaign.CampaignCoverUrl && !imgError) {
+      return (
+        <img
+          src={campaign.CampaignCoverUrl}
+          alt={campaign.CampaignTitle}
+          onError={() => setImgError(true)}
+        />
+      );
+    }
+
+    return (
+      <div className="banner-fallback">
+        <i className="fas fa-dice-d20" />
+      </div>
+    );
+  };
+
   return (
     <div className={`campaign-card ${isFeatured ? 'featured' : ''}`}>
       <div className="campaign-banner">
-        {campaign.CampaignCoverUrl ? (
-          <img src={campaign.CampaignCoverUrl} alt={campaign.CampaignTitle} />
-        ) : (
-          <div className="banner-fallback">
-            <i className="fas fa-dice-d20" />
-          </div>
-        )}
+        {renderBanner()}
         <div className="banner-overlay" />
 
         <div className={`campaign-status-badge ${statusClass}`}>
@@ -63,20 +78,20 @@ export const CampaignCard: FC<CampaignCardProps> = ({ campaign, isFeatured = fal
 
           <div className="meta-item">
             <span className="meta-label">Inicio / Ciclo</span>
-            <span className="meta-value">{campaign.CampaignStartDate || 'Por definir'}</span>
+            <span className="meta-value">{campaign.CampaignStartDate || 'Por anunciar'}</span>
           </div>
 
           <div className="meta-item">
-            <span className="meta-label">Agentes / Jugadores</span>
+            <span className="meta-label">Jugadores</span>
             <span className="meta-value">
-              {campaign.CampaignPlayerCount !== null ? `${campaign.CampaignPlayerCount} asignados` : 'TBD'}
+              {campaign.CampaignPlayerCount !== null ? `${campaign.CampaignPlayerCount} Agentes` : 'TBD'}
             </span>
           </div>
 
           <div className="meta-item">
             <span className="meta-label">Sesiones</span>
             <span className="meta-value">
-              {campaign.CampaignSessionCount !== null ? `${campaign.CampaignSessionCount} registradas` : '0'}
+              {campaign.CampaignSessionCount !== null ? `${campaign.CampaignSessionCount} Sesiones` : '0'}
             </span>
           </div>
         </div>
@@ -110,8 +125,8 @@ export const CampaignCard: FC<CampaignCardProps> = ({ campaign, isFeatured = fal
               className="btn-foundry"
               title="Abrir servidor de Foundry VTT"
             >
-              <i className="fas fa-external-link-alt" />
-              <span>Foundry VTT</span>
+              <i className="fas fa-play" />
+              <span>Foundry</span>
             </a>
           )}
         </div>

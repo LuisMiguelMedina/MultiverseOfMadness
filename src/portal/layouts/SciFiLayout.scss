@@ -1,0 +1,336 @@
+/* =========================================================
+   SCIFI PORTAL LAYOUT - Modern Fandom & Foundry VTT Theme
+   Inspired by high-end gaming wikis and modern web composition
+   ========================================================= */
+
+.scifi-portal-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #06070d;
+  background-image:
+    radial-gradient(circle at 15% 15%, rgba(0, 204, 255, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 85% 25%, rgba(138, 43, 226, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 50% 80%, rgba(0, 102, 255, 0.05) 0%, transparent 50%),
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+  color: #dbe2f4;
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  position: relative;
+  overflow-x: hidden;
+
+  /* Ambient Cyber Glow Header */
+  .scifi-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    background: rgba(8, 10, 18, 0.88);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
+
+    .topbar-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0.85rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+
+      @media (max-width: 768px) {
+        padding: 0.75rem 1rem;
+      }
+    }
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      cursor: pointer;
+
+      .brand-crest {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #00ffff 0%, #0066ff 50%, #9900ff 100%);
+        padding: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+
+        .crest-inner {
+          width: 100%;
+          height: 100%;
+          background: #090b14;
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #00ffff;
+          font-size: 1.1rem;
+        }
+      }
+
+      .brand-titles {
+        display: flex;
+        flex-direction: column;
+
+        .brand-title-main {
+          font-family: 'Space Grotesk', sans-serif;
+          font-size: 1.15rem;
+          font-weight: 700;
+          letter-spacing: 0.05em;
+          color: #ffffff;
+          line-height: 1.1;
+          text-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+        }
+
+        .brand-subtitle-tag {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 0.65rem;
+          letter-spacing: 0.15em;
+          color: #00cccc;
+          text-transform: uppercase;
+        }
+      }
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      @media (max-width: 991px) {
+        display: none;
+      }
+
+      li {
+        a {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 14px;
+          border-radius: 6px;
+          color: #a0adc8;
+          font-family: 'Space Grotesk', sans-serif;
+          font-size: 0.88rem;
+          font-weight: 600;
+          text-decoration: none;
+          transition: all 0.25s ease;
+
+          i {
+            font-size: 0.85rem;
+            color: #00cccc;
+            transition: color 0.25s ease;
+          }
+
+          &:hover {
+            color: #ffffff;
+            background: rgba(0, 255, 255, 0.08);
+
+            i {
+              color: #00ffff;
+              text-shadow: 0 0 8px #00ffff;
+            }
+          }
+
+          &.active {
+            color: #00ffff;
+            background: rgba(0, 255, 255, 0.14);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 12px rgba(0, 255, 255, 0.2);
+
+            i {
+              color: #00ffff;
+            }
+          }
+        }
+      }
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .btn-vtt-quick {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, rgba(255, 170, 0, 0.2) 0%, rgba(255, 102, 0, 0.2) 100%);
+        border: 1px solid #ffaa00;
+        color: #ffaa00;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.25s ease;
+
+        .vtt-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #00ff88;
+          box-shadow: 0 0 8px #00ff88;
+          animation: pulseDot 2s infinite;
+        }
+
+        &:hover {
+          background: rgba(255, 170, 0, 0.35);
+          color: #ffffff;
+          box-shadow: 0 0 15px rgba(255, 170, 0, 0.5);
+        }
+      }
+
+      .btn-intranet-login {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #d0d8f0;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.82rem;
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.25s ease;
+
+        &:hover {
+          border-color: #00ffff;
+          color: #00ffff;
+          background: rgba(0, 255, 255, 0.1);
+        }
+      }
+    }
+  }
+
+  .scifi-main-stage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Sci-Fi Global Footer */
+  .scifi-footer {
+    background: #040509;
+    border-top: 1px solid rgba(0, 255, 255, 0.15);
+    padding: 3rem 2rem 2rem;
+    margin-top: 4rem;
+
+    .footer-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 2.5rem;
+      margin-bottom: 2.5rem;
+
+      @media (max-width: 991px) {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      @media (max-width: 576px) {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-brand {
+        h4 {
+          font-family: 'Space Grotesk', sans-serif;
+          font-size: 1.25rem;
+          color: #ffffff;
+          margin-bottom: 0.6rem;
+        }
+
+        p {
+          color: #7b86a8;
+          font-size: 0.88rem;
+          line-height: 1.6;
+          max-width: 360px;
+        }
+      }
+
+      .footer-col {
+        h5 {
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 0.8rem;
+          color: #00ffff;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          margin-bottom: 1rem;
+        }
+
+        ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+
+          li {
+            margin-bottom: 0.5rem;
+
+            a {
+              color: #8c98ba;
+              font-size: 0.85rem;
+              text-decoration: none;
+              transition: color 0.2s ease;
+
+              &:hover {
+                color: #ffffff;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .footer-bottom {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.78rem;
+      color: #556080;
+      font-family: 'JetBrains Mono', monospace;
+
+      a {
+        color: #7a8cb4;
+        text-decoration: none;
+
+        &:hover {
+          color: #00ffff;
+        }
+      }
+    }
+  }
+}
+
+@keyframes pulseDot {
+  0% {
+    opacity: 0.4;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 0.4;
+    transform: scale(0.9);
+  }
+}

@@ -1,28 +1,28 @@
 .campaign-card {
   position: relative;
-  background: rgba(18, 18, 26, 0.75);
-  border: 1px solid rgba(0, 255, 255, 0.2);
-  border-radius: 8px;
+  background: rgba(14, 18, 30, 0.85);
+  border: 1px solid rgba(0, 255, 255, 0.22);
+  border-radius: 12px;
   overflow: hidden;
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
+  backdrop-filter: blur(12px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
 
   &:hover {
-    border-color: rgba(0, 255, 255, 0.6);
-    box-shadow: 0 0 25px rgba(0, 255, 255, 0.25);
-    transform: translateY(-3px);
+    border-color: rgba(0, 255, 255, 0.65);
+    box-shadow: 0 12px 35px rgba(0, 204, 255, 0.22);
+    transform: translateY(-4px);
   }
 
   &.featured {
     border: 1px solid rgba(0, 255, 255, 0.45);
     background: linear-gradient(
       145deg,
-      rgba(15, 20, 35, 0.9) 0%,
-      rgba(10, 12, 22, 0.95) 100%
+      rgba(18, 24, 44, 0.95) 0%,
+      rgba(10, 14, 26, 0.98) 100%
     );
-    box-shadow: 0 0 20px rgba(0, 128, 255, 0.2);
+    box-shadow: 0 0 30px rgba(0, 153, 255, 0.2);
 
     .campaign-banner {
       height: 220px;
@@ -31,23 +31,27 @@
 
   .campaign-banner {
     position: relative;
-    height: 160px;
+    height: 180px;
     width: 100%;
-    background: #080a14;
+    background: #080b16;
     overflow: hidden;
 
     img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      opacity: 0.7;
+      opacity: 0.75;
       transition: transform 0.5s ease;
     }
 
     .banner-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to bottom, rgba(10, 10, 15, 0.2) 0%, rgba(10, 10, 15, 0.95) 100%);
+      background: linear-gradient(
+        to bottom,
+        rgba(8, 11, 20, 0.2) 0%,
+        rgba(8, 11, 20, 0.95) 100%
+      );
     }
 
     .banner-fallback {
@@ -56,9 +60,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle, rgba(0, 128, 255, 0.15) 0%, rgba(10, 10, 15, 0.9) 100%);
-      color: rgba(0, 255, 255, 0.4);
-      font-size: 3rem;
+      background: radial-gradient(circle at center, rgba(0, 153, 255, 0.25) 0%, rgba(8, 11, 20, 0.95) 100%);
+      color: rgba(0, 255, 255, 0.6);
+      font-size: 3.5rem;
     }
 
     .campaign-status-badge {
@@ -70,10 +74,10 @@
       gap: 6px;
       padding: 4px 10px;
       border-radius: 4px;
-      font-family: var(--font-mono, monospace);
+      font-family: 'JetBrains Mono', monospace;
       font-size: 0.72rem;
       font-weight: 700;
-      letter-spacing: 1px;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
 
       .status-dot {
@@ -83,10 +87,10 @@
       }
 
       &.status-active {
-        background: rgba(0, 255, 128, 0.15);
+        background: rgba(0, 255, 128, 0.2);
         border: 1px solid #00ff80;
         color: #00ff80;
-        box-shadow: 0 0 10px rgba(0, 255, 128, 0.3);
+        box-shadow: 0 0 12px rgba(0, 255, 128, 0.4);
 
         .status-dot {
           background: #00ff80;
@@ -95,7 +99,7 @@
       }
 
       &.status-upcoming {
-        background: rgba(0, 204, 255, 0.15);
+        background: rgba(0, 204, 255, 0.18);
         border: 1px solid #00ccff;
         color: #00ccff;
 
@@ -105,7 +109,7 @@
       }
 
       &.status-development {
-        background: rgba(255, 170, 0, 0.15);
+        background: rgba(255, 170, 0, 0.18);
         border: 1px solid #ffaa00;
         color: #ffaa00;
 
@@ -129,44 +133,44 @@
       position: absolute;
       bottom: 12px;
       left: 14px;
-      background: rgba(0, 0, 0, 0.75);
-      border: 1px solid rgba(0, 255, 255, 0.3);
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid rgba(0, 255, 255, 0.35);
       color: #00ffff;
       padding: 3px 8px;
       border-radius: 3px;
       font-size: 0.75rem;
-      font-family: var(--font-mono, monospace);
+      font-family: 'JetBrains Mono', monospace;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
     }
   }
 
   &:hover .campaign-banner img {
-    transform: scale(1.05);
-    opacity: 0.85;
+    transform: scale(1.06);
+    opacity: 0.9;
   }
 
   .campaign-body {
-    padding: 1.25rem;
+    padding: 1.5rem;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
 
     .campaign-title {
-      font-family: var(--font-mono, monospace);
-      font-size: 1.25rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.35rem;
       font-weight: 700;
       color: #ffffff;
       margin-bottom: 0.5rem;
-      text-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
     }
 
     .campaign-description {
-      font-size: 0.88rem;
-      color: #b0b4c8;
-      line-height: 1.45;
-      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      color: #9cb0d4;
+      line-height: 1.55;
+      margin-bottom: 1.25rem;
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
@@ -176,12 +180,12 @@
     .campaign-meta-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      margin-bottom: 1rem;
-      padding: 8px 10px;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 4px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      gap: 10px;
+      margin-bottom: 1.25rem;
+      padding: 10px 12px;
+      background: rgba(8, 11, 20, 0.6);
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
 
       .meta-item {
         display: flex;
@@ -189,15 +193,17 @@
 
         .meta-label {
           font-size: 0.7rem;
-          color: #707590;
+          color: #657599;
           text-transform: uppercase;
-          font-family: var(--font-mono, monospace);
+          font-family: 'JetBrains Mono', monospace;
+          letter-spacing: 0.05em;
         }
 
         .meta-value {
-          font-size: 0.82rem;
-          color: #e0e4f0;
-          font-weight: 500;
+          font-size: 0.85rem;
+          color: #e4edf8;
+          font-weight: 600;
+          font-family: 'Space Grotesk', sans-serif;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -208,16 +214,17 @@
     .campaign-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 5px;
-      margin-bottom: 1.25rem;
+      gap: 6px;
+      margin-bottom: 1.5rem;
 
       .tag-pill {
-        font-size: 0.7rem;
-        background: rgba(0, 128, 255, 0.15);
+        font-size: 0.72rem;
+        background: rgba(0, 153, 255, 0.15);
         color: #70b8ff;
-        border: 1px solid rgba(0, 128, 255, 0.25);
-        padding: 2px 7px;
-        border-radius: 3px;
+        border: 1px solid rgba(0, 153, 255, 0.3);
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-family: 'JetBrains Mono', monospace;
       }
     }
 
@@ -231,22 +238,22 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
-        background: linear-gradient(135deg, rgba(0, 204, 255, 0.2) 0%, rgba(0, 128, 255, 0.3) 100%);
+        gap: 8px;
+        background: linear-gradient(135deg, rgba(0, 204, 255, 0.25) 0%, rgba(0, 102, 255, 0.3) 100%);
         border: 1px solid #00ffff;
         color: #00ffff;
-        padding: 8px 14px;
-        border-radius: 4px;
-        font-family: var(--font-mono, monospace);
-        font-size: 0.85rem;
-        font-weight: 600;
+        padding: 10px 16px;
+        border-radius: 6px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
         text-decoration: none;
         cursor: pointer;
         transition: all 0.25s ease;
 
         &:hover {
-          background: rgba(0, 255, 255, 0.3);
-          box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+          background: rgba(0, 255, 255, 0.35);
+          box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
           color: #ffffff;
         }
       }
@@ -256,21 +263,21 @@
         align-items: center;
         justify-content: center;
         gap: 6px;
-        background: rgba(255, 170, 0, 0.12);
+        background: rgba(255, 170, 0, 0.15);
         border: 1px solid #ffaa00;
         color: #ffaa00;
-        padding: 8px 12px;
-        border-radius: 4px;
-        font-family: var(--font-mono, monospace);
-        font-size: 0.85rem;
-        font-weight: 600;
+        padding: 10px 14px;
+        border-radius: 6px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
         text-decoration: none;
         cursor: pointer;
         transition: all 0.25s ease;
 
         &:hover {
-          background: rgba(255, 170, 0, 0.25);
-          box-shadow: 0 0 15px rgba(255, 170, 0, 0.4);
+          background: rgba(255, 170, 0, 0.3);
+          box-shadow: 0 0 18px rgba(255, 170, 0, 0.45);
           color: #ffffff;
         }
       }

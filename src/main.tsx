@@ -6,6 +6,7 @@ import './portal/theme.scss';
 import { AuthProvider } from './portal/auth';
 import { ProtectedRoute } from './portal/ProtectedRoute';
 import { Layout } from './portal/Layout';
+import { SciFiLayout } from './portal/layouts/SciFiLayout';
 import { Login } from './portal/Login';
 import { Register } from './portal/pages/Register';
 import { Dashboard } from './portal/pages/Dashboard';
@@ -20,7 +21,7 @@ import { Settings } from './portal/pages/Settings';
 import { CampaignHub } from './portal/pages/CampaignHub';
 import { WikiArticleView } from './portal/pages/WikiArticleView';
 
-// Multiverse of Madness — the ZRK intranet portal & Sci-Fi Lore / Campaign Hub.
+// Multiverse of Madness — Sci-Fi Lore & Campaign Portal (Public) + ZRK Intranet (Auth-guarded).
 const basename = import.meta.env.BASE_URL.replace(/\/$/, '');
 const router = createBrowserRouter(
   [
@@ -31,18 +32,28 @@ const router = createBrowserRouter(
         </AuthProvider>
       ),
       children: [
-        { index: true, element: <Navigate to="/campaigns" replace /> },
-        { path: 'login', element: <Login /> },
-        { path: 'register', element: <Register /> },
+        // 1. Modern Sci-Fi Public Portal (Campañas, Wiki de Lore, Fandom Explorer)
         {
-          element: <Layout />,
+          element: <SciFiLayout />,
           children: [
+            { index: true, element: <CampaignHub /> },
             { path: 'campaigns', element: <CampaignHub /> },
             { path: 'wiki', element: <Navigate to="/wiki/bttf" replace /> },
             { path: 'wiki/:campaignID', element: <WikiArticleView /> },
             { path: 'wiki/:campaignID/:articleSlug', element: <WikiArticleView /> },
+          ],
+        },
+
+        // 2. Auth routes
+        { path: 'login', element: <Login /> },
+        { path: 'register', element: <Register /> },
+
+        // 3. ZRK Intranet Dashboard & Admin terminal (Auth-guarded)
+        {
+          element: <ProtectedRoute />,
+          children: [
             {
-              element: <ProtectedRoute />,
+              element: <Layout />,
               children: [
                 { path: 'dashboard', element: <Dashboard /> },
                 { path: 'profile', element: <Profile /> },
@@ -57,7 +68,9 @@ const router = createBrowserRouter(
             },
           ],
         },
-        { path: '*', element: <Navigate to="/campaigns" replace /> },
+
+        // 4. Fallback redirect to Home
+        { path: '*', element: <Navigate to="/" replace /> },
       ],
     },
   ],
