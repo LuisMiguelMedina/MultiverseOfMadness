@@ -5,6 +5,12 @@
  */
 
 import { BTTF_CATEGORIES_SEED, BTTF_WIKI_SEED } from '../data/bttf-wiki.seed';
+import {
+  EONES_CATEGORIES_SEED,
+  EONES_WIKI_SEED,
+  GOLDEN_21_CATEGORIES_SEED,
+  GOLDEN_21_WIKI_SEED,
+} from '../data/multiverse-wiki.seed';
 import { ResponseObject } from '../models/Common/TransactionModels';
 import {
   WikiArticleBase,
@@ -12,14 +18,66 @@ import {
   WikiArticleFind,
   WikiCategoryBase,
 } from '../models/Wiki/WikiModels';
+import { CampaignDataAccess } from './CampaignDataAccess';
 
 export class WikiDataAccess {
+  /**
+   * Helper to retrieve all articles for a specific campaign, including seeds and fallbacks.
+   */
+  private static getArticlesForCampaign(campaignID: string): WikiArticleBase[] {
+    if (campaignID === 'bttf') {
+      return [...BTTF_WIKI_SEED];
+    }
+    if (campaignID === 'golden-21') {
+      return [...GOLDEN_21_WIKI_SEED];
+    }
+    if (campaignID === 'cronicas-eones') {
+      return [...EONES_WIKI_SEED];
+    }
+
+    // Dynamic fallback for any campaign registered in CampaignDataAccess
+    const campRes = CampaignDataAccess.Find({ CampaignID: campaignID });
+    if (campRes.CodeNumber === 302 && campRes.Result) {
+      const camp = campRes.Result;
+      const defaultSlug = camp.CampaignWikiHomeSlug || camp.CampaignSlug || camp.CampaignID;
+      return [
+        {
+          ArticleID: `art_${camp.CampaignID}_overview`,
+          CampaignID: camp.CampaignID,
+          ArticleSlug: defaultSlug,
+          ArticleTitle: camp.CampaignTitle,
+          ArticleSubtitle: camp.CampaignSystem,
+          ArticleCategories: ['Categoría:Expedientes'],
+          ArticleContent: `## ${camp.CampaignTitle}\n\n${camp.CampaignDescription}\n\n### Expediente de Campaña\n\n- **Sistema**: ${camp.CampaignSystem}\n- **Game Master**: ${camp.CampaignGameMaster}\n- **Fecha de Inicio**: ${camp.CampaignStartDate || 'Por anunciar'}\n- **Jugadores**: ${camp.CampaignPlayerCount ?? 'TBD'}\n- **Sesiones**: ${camp.CampaignSessionCount ?? 0}\n\n> [!NOTE]\n> La documentación y crónicas de este universo se encuentran en recopilación por el Game Master.`,
+          ArticleInfobox: {
+            InfoboxType: 'GENERAL',
+            Title: camp.CampaignTitle,
+            ImageUrl: camp.CampaignCoverUrl,
+            ImageCaption: camp.CampaignSystem,
+            Properties: [
+              { Key: 'Game Master', Value: camp.CampaignGameMaster },
+              { Key: 'Sistema', Value: camp.CampaignSystem },
+              { Key: 'Estado', Value: camp.CampaignStatus },
+            ],
+          },
+          ArticleAliases: [camp.CampaignID, camp.CampaignSlug],
+          ArticleRelatedSlugs: [],
+          ArticleIsRedirect: false,
+          ArticleRedirectTarget: null,
+          LastModified: 'Reciente',
+        },
+      ];
+    }
+
+    return [];
+  }
+
   /**
    * Resolves aliases and redirection targets to canonical slugs.
    */
   public static ResolveAlias(campaignID: string, slugOrAlias: string): string {
     const normalized = slugOrAlias.toLowerCase().trim();
-    const articles = campaignID === 'bttf' ? BTTF_WIKI_SEED : [];
+    const articles = this.getArticlesForCampaign(campaignID);
 
     // Direct slug match
     const direct = articles.find((a) => a.ArticleSlug === normalized);
@@ -52,7 +110,7 @@ export class WikiDataAccess {
   public static Find(find: WikiArticleFind): ResponseObject<WikiArticleBase> {
     try {
       const canonicalSlug = this.ResolveAlias(find.CampaignID, find.ArticleSlug);
-      const articles = find.CampaignID === 'bttf' ? BTTF_WIKI_SEED : [];
+      const articles = this.getArticlesForCampaign(find.CampaignID);
       const article = articles.find((a) => a.ArticleSlug === canonicalSlug);
 
       if (!article) {
@@ -91,7 +149,7 @@ export class WikiDataAccess {
    */
   public static List(filter: WikiArticleFilter): ResponseObject<WikiArticleBase[]> {
     try {
-      let articles = filter.CampaignID === 'bttf' ? [...BTTF_WIKI_SEED] : [];
+      let articles = this.getArticlesForCampaign(filter.CampaignID);
 
       // Filter out pure redirects from general listing unless searching
       if (!filter.SearchQuery) {
@@ -141,7 +199,23 @@ export class WikiDataAccess {
    */
   public static ListCategories(campaignID: string): ResponseObject<WikiCategoryBase[]> {
     try {
-      const categories = campaignID === 'bttf' ? BTTF_CATEGORIES_SEED : [];
+      let categories: WikiCategoryBase[] = [];
+      if (campaignID === 'bttf') {
+        categories = BTTF_CATEGORIES_SEED;
+      } else if (campaignID === 'golden-21') {
+        categories = GOLDEN_21_CATEGORIES_SEED;
+      } else if (campaignID === 'cronicas-eones') {
+        categories = EONES_CATEGORIES_SEED;
+      } else {
+        categories = [
+          {
+            CategoryID: 'categoria-expedientes',
+            CategoryName: 'Categoría:Expedientes',
+            ArticleCount: 1,
+          },
+        ];
+      }
+
       return {
         CodeNumber: 200,
         CodeName: 'OK',

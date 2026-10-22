@@ -33,6 +33,8 @@ export const CampaignHub: FC = () => {
     return list;
   }, [activeCampaign, otherCampaigns, localExtraCampaigns]);
 
+  const focusedCampaign = selectedCampaign || allCampaigns[0] || null;
+
   const handleCreateCampaign = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
@@ -52,7 +54,7 @@ export const CampaignHub: FC = () => {
       CampaignPlayerCount: null,
       CampaignSessionCount: 0,
       CampaignFoundryUrl: null,
-      CampaignWikiHomeSlug: null,
+      CampaignWikiHomeSlug: slug,
       CampaignTags: ['Comunidad', 'Nuevo Mundo'],
     };
 
@@ -63,15 +65,13 @@ export const CampaignHub: FC = () => {
     setNewDM('');
   };
 
-  const isBTTF = !selectedCampaign || selectedCampaign.CampaignID === 'bttf';
-
   return (
     <div className="scifi-hub-container">
       {/* ---------------- 1. COMMAND HEADER ---------------- */}
       <header className="hub-command-header">
         <div className="header-pill-badge">
           <i className="fas fa-satellite-dish me-2" />
-          <span>Centro de Operaciones & Lore Multiversal</span>
+          <span>Centro de Mando & Archivo Multiversal</span>
         </div>
 
         <h1 className="header-main-title">
@@ -79,8 +79,9 @@ export const CampaignHub: FC = () => {
         </h1>
 
         <p className="header-tagline">
-          Catálogo de universos y campañas VTT. Selecciona una card para explorar su expediente de lore,
-          facciones y servidor de juego.
+          Catálogo general de universos TTRPG y servidores Foundry VTT. Selecciona una card en el
+          carrusel interactivo para desclasificar su wiki de lore, facciones y conectar a su sesión
+          en vivo.
         </p>
       </header>
 
@@ -94,7 +95,7 @@ export const CampaignHub: FC = () => {
       {isLoading && (
         <div className="text-center py-5">
           <div className="spinner-border text-info" role="status" />
-          <p className="mt-2 text-muted font-monospace">Sincronizando universos...</p>
+          <p className="mt-2 text-muted font-monospace">Sincronizando universos del multiverso...</p>
         </div>
       )}
 
@@ -107,160 +108,205 @@ export const CampaignHub: FC = () => {
         />
       </section>
 
-      {/* ---------------- 3. LORE PILLARS (WHEN BTTF IS SELECTED) ---------------- */}
-      {isBTTF && (
-        <section className="active-lore-pillars-section">
-          <div className="section-headline">
-            <span className="sub-tag">
-              <i className="fas fa-microchip me-1" />
-              Expedientes Clave de la Campaña
-            </span>
-            <h2 className="main-title">Pilares de Back To The Future</h2>
-            <p className="desc">
-              Accede a los archivos geopolíticos, facciones y mecánicas que rigen la Dimensión 21
-              en la convergencia temporal de Volkxus.
-            </p>
-          </div>
+      {/* ---------------- 3. FOCUSED CAMPAIGN ACTION HUD ---------------- */}
+      {focusedCampaign && (
+        <section className="hub-focused-hud-section">
+          <div className="focused-hud-card">
+            <div className="focused-hud-header">
+              <div className="hud-badge-tag">
+                <i className="fas fa-crosshairs me-1" />
+                <span>Mundo Enfocado // Sector: {focusedCampaign.CampaignID.toUpperCase()}</span>
+              </div>
+              <span className="hud-status-chip">
+                ● Estado: {focusedCampaign.CampaignStatus}
+              </span>
+            </div>
 
-          <div className="lore-pillars-grid">
-            <Link to="/wiki/bttf/trifarix" className="pillar-card">
-              <i className="fas fa-shield-halved pillar-icon" />
-              <h5>La Trifarix</h5>
-              <p>
-                El poder tripartito: Familia Fahrenheit, Casa Celsius y la Oligarquía de Valrius.
-              </p>
-            </Link>
+            <div className="focused-hud-body">
+              <div className="hud-info-main">
+                <h3 className="hud-campaign-title">{focusedCampaign.CampaignTitle}</h3>
+                <p className="hud-campaign-desc">{focusedCampaign.CampaignDescription}</p>
 
-            <Link to="/wiki/bttf/casa-bloodfallen" className="pillar-card">
-              <i className="fas fa-droplet pillar-icon" />
-              <h5>Casa Bloodfallen</h5>
-              <p>
-                La dinastía vampírica militar de Kelberos Bloodfallen y el Señor de la Sangre.
-              </p>
-            </Link>
+                <div className="hud-meta-pills">
+                  <span className="meta-pill">
+                    <i className="fas fa-microchip me-1" />
+                    <strong>Sistema:</strong> {focusedCampaign.CampaignSystem}
+                  </span>
+                  <span className="meta-pill">
+                    <i className="fas fa-crown me-1" />
+                    <strong>Game Master:</strong> {focusedCampaign.CampaignGameMaster}
+                  </span>
+                  <span className="meta-pill">
+                    <i className="fas fa-dice-d20 me-1" />
+                    <strong>Sesiones:</strong> {focusedCampaign.CampaignSessionCount ?? 0}
+                  </span>
+                </div>
+              </div>
 
-            <Link to="/wiki/bttf/dimension21-volkxus" className="pillar-card">
-              <i className="fas fa-mountain-city pillar-icon" />
-              <h5>Dimensión 21 & Volkxus</h5>
-              <p>El régimen meritocrático, los estados caídos y el monopolio de petra magus.</p>
-            </Link>
+              <div className="hud-actions-group">
+                <Link
+                  to={`/wiki/${focusedCampaign.CampaignID}${
+                    focusedCampaign.CampaignWikiHomeSlug ? `/${focusedCampaign.CampaignWikiHomeSlug}` : ''
+                  }`}
+                  className="btn-hud-wiki"
+                >
+                  <i className="fas fa-book-journal-whills me-2" />
+                  <span>Entrar a la Wiki de este Mundo</span>
+                </Link>
 
-            <Link to="/wiki/bttf/back-to-the-future-past-and-future" className="pillar-card">
-              <i className="fas fa-scroll pillar-icon" />
-              <h5>Reglas & Mecánicas</h5>
-              <p>
-                Pieza tocada/movida, combate narrativo de 3 acciones y eventos caóticos mariposa.
-              </p>
-            </Link>
+                {focusedCampaign.CampaignFoundryUrl ? (
+                  <a
+                    href={focusedCampaign.CampaignFoundryUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn-hud-foundry"
+                  >
+                    <i className="fas fa-play me-2" />
+                    <span>Conectar a Foundry VTT</span>
+                  </a>
+                ) : (
+                  <div className="btn-hud-disabled">
+                    <i className="fas fa-clock me-2" />
+                    <span>Servidor VTT en preparación</span>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </section>
       )}
 
-      {/* ---------------- 4. FEATURED LORE DOSSIERS ---------------- */}
-      <section className="featured-lore-section">
+      {/* ---------------- 4. COMPATIBLE SYSTEMS ECOSYSTEM ---------------- */}
+      <section className="hub-systems-section">
         <div className="section-headline">
           <span className="sub-tag">
-            <i className="fas fa-database me-1" />
-            Enciclopedia Canónica
+            <i className="fas fa-cubes me-1" />
+            Diversidad Lúdica // TTRPG Moderno
           </span>
-          <h2 className="main-title">Expedientes Destacados del Lore</h2>
+          <h2 className="main-title">Ecosistema de Sistemas & Géneros</h2>
           <p className="desc">
-            Acceso directo a las figuras más influyentes, las potencias imperiales y las anomalías
-            dimensionales extraídas del archivo central.
+            El Multiverse of Madness alberga campañas con dinámicas narrativas personalizadas, desde
+            alta ciencia ficción y fantasía táctica hasta horror cósmico y operaciones encubiertas.
           </p>
         </div>
 
-        <div className="lore-cards-grid">
-          {/* Card 1: Kelberos Bloodfallen */}
-          <Link to="/wiki/bttf/kelberos-bloodfallen" className="lore-dossier-card">
-            <span className="card-category-badge">Personaje Jugable // Casa Bloodfallen</span>
-            <h4 className="card-dossier-title">Kelberos Bloodfallen</h4>
-            <p className="card-snippet">
-              Heredero militar de la Casa Bloodfallen. Especializado en artes de combate con sangre y
-              resistencia aumentada. Su lealtad familiar rivaliza con la ambición del Señor de la
-              Sangre.
+        <div className="systems-cards-grid">
+          <div className="system-feature-card">
+            <div className="system-icon-box">
+              <i className="fas fa-dice-d20" />
+            </div>
+            <h4>D&D 5E Modificado</h4>
+            <p>
+              Combate táctico de 3 acciones, reloj de tensión de eventos mariposa y reglas de muerte
+              hardcore adaptadas para una experiencia inmersiva.
             </p>
-            <span className="card-footer-cta">
-              <span>Leer expediente completo</span>
-              <i className="fas fa-arrow-right ms-1" />
-            </span>
-          </Link>
+            <span className="system-badge-pill">Fantasía & Sci-Fi Híbrido</span>
+          </div>
 
-          {/* Card 2: Kasumi Ryoko */}
-          <Link to="/wiki/bttf/kasumi-ryoko" className="lore-dossier-card">
-            <span className="card-category-badge">Past & Future // Personaje</span>
-            <h4 className="card-dossier-title">Kasumi Ryoko</h4>
-            <p className="card-snippet">
-              Guerrera ágil con dominio de técnicas ancestrales. Procedente de una dimensión paralela
-              donde el pasado místico aún preserva sus artes secretas contra la invasión de la
-              tecnología.
+          <div className="system-feature-card">
+            <div className="system-icon-box">
+              <i className="fas fa-shield-halved" />
+            </div>
+            <h4>Cyber-Ops & Infiltración</h4>
+            <p>
+              Operaciones de reconocimiento dimensional, armamento adaptable, sigilo cibernético y
+              protocolos tácticos de intervención rápida.
             </p>
-            <span className="card-footer-cta">
-              <span>Leer expediente completo</span>
-              <i className="fas fa-arrow-right ms-1" />
-            </span>
-          </Link>
+            <span className="system-badge-pill">Militar & Cyberpunk</span>
+          </div>
 
-          {/* Card 3: Telemachus Absol */}
-          <Link to="/wiki/bttf/telemachus-absol" className="lore-dossier-card">
-            <span className="card-category-badge">BTTF2 PC // Agente de Campo</span>
-            <h4 className="card-dossier-title">Telemachus Absol</h4>
-            <p className="card-snippet">
-              Especialista táctico con armamento adaptativo y enlace dimensional. Figura clave en la
-              segunda fase de infiltración temporal en Volkxus.
+          <div className="system-feature-card">
+            <div className="system-icon-box">
+              <i className="fas fa-eye" />
+            </div>
+            <h4>Horror Cósmico & Eones</h4>
+            <p>
+              Enfrentamiento con entidades arcanas primordiales, pruebas de cordura mental y
+              resolución de misterios en los bordes de la realidad.
             </p>
-            <span className="card-footer-cta">
-              <span>Leer expediente completo</span>
-              <i className="fas fa-arrow-right ms-1" />
-            </span>
-          </Link>
+            <span className="system-badge-pill">Sobrenatural & Arcano</span>
+          </div>
 
-          {/* Card 4: La Trifarix */}
-          <Link to="/wiki/bttf/trifarix" className="lore-dossier-card">
-            <span className="card-category-badge">Facción Imperial // Poder Supremo</span>
-            <h4 className="card-dossier-title">La Trifarix</h4>
-            <p className="card-snippet">
-              Estructura tripartita que domina el imperio: Familia Fahrenheit (fuerza militar), Casa
-              Celsius (investigación técnica) y la Oligarquía de Valrius (diplomacia y comercio).
+          <div className="system-feature-card">
+            <div className="system-icon-box">
+              <i className="fas fa-server" />
+            </div>
+            <h4>Foundry VTT Nativo</h4>
+            <p>
+              Mapas con iluminación dinámica, efectos visuales por capas, automatización de tiradas
+              y sincronización instantánea con las fichas de agentes.
             </p>
-            <span className="card-footer-cta">
-              <span>Leer expediente completo</span>
-              <i className="fas fa-arrow-right ms-1" />
-            </span>
-          </Link>
-
-          {/* Card 5: Dimensión 21 */}
-          <Link to="/wiki/bttf/dimension21-volkxus" className="lore-dossier-card">
-            <span className="card-category-badge">Plano Dimensional // Geopolítica</span>
-            <h4 className="card-dossier-title">Dimensión 21: Volkxus</h4>
-            <p className="card-snippet">
-              Nación meritocrática y xenofóbica nacida tras la conquista de los estados de Necrora y
-              Aiolis. Monopolistas de los artefactos forjados en Petra Magus.
-            </p>
-            <span className="card-footer-cta">
-              <span>Leer expediente completo</span>
-              <i className="fas fa-arrow-right ms-1" />
-            </span>
-          </Link>
-
-          {/* Card 6: Maestro Soldador Glen Eldric */}
-          <Link to="/wiki/bttf/back-to-the-future-past-and-future" className="lore-dossier-card">
-            <span className="card-category-badge">Magia Vs Ciencia // Filosofía</span>
-            <h4 className="card-dossier-title">La Disputa de la Magia y la Ciencia</h4>
-            <p className="card-snippet">
-              "La magia es solo ciencia que aún no ha sido analizada o descubierta". El conflicto
-              ideológico entre los conservadores de Volkxus, el Partido Libertador y el Partido
-              Unificador.
-            </p>
-            <span className="card-footer-cta">
-              <span>Leer expediente completo</span>
-              <i className="fas fa-arrow-right ms-1" />
-            </span>
-          </Link>
+            <span className="system-badge-pill">Infraestructura VTT</span>
+          </div>
         </div>
       </section>
 
-      {/* ---------------- 5. ADD CAMPAIGN MODAL ---------------- */}
+      {/* ---------------- 5. MULTIVERSE ACCESS PROTOCOL ---------------- */}
+      <section className="hub-protocol-section">
+        <div className="section-headline">
+          <span className="sub-tag">
+            <i className="fas fa-network-wired me-1" />
+            Protocolo de Enlace // Guía Rápida
+          </span>
+          <h2 className="main-title">¿Cómo Explorar el Multiverso?</h2>
+          <p className="desc">
+            Sigue estos tres pasos para adentrarte en cualquiera de nuestras campañas activas.
+          </p>
+        </div>
+
+        <div className="protocol-steps-grid">
+          <div className="protocol-step-card">
+            <div className="step-number">01</div>
+            <h4>Selecciona un Universo</h4>
+            <p>
+              Navega en el carrusel interactivo para examinar las crónicas activas, sus sistemas de
+              juego y sinopsis de ambientación.
+            </p>
+          </div>
+
+          <div className="protocol-step-card">
+            <div className="step-number">02</div>
+            <h4>Desclasifica su Wiki</h4>
+            <p>
+              Haz clic en "Explorar Wiki" en la card del mundo para acceder a su enciclopedia
+              dedicada: facciones, personajes, lugares y reglas específicas.
+            </p>
+          </div>
+
+          <div className="protocol-step-card">
+            <div className="step-number">03</div>
+            <h4>Conéctate a Foundry VTT</h4>
+            <p>
+              Lanza la conexión directa al servidor de juego cuando la sesión esté en vivo para
+              tomar control de tu ficha de personaje y el mapa de batalla.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- 6. GLOBAL METRICS ---------------- */}
+      <section className="hub-metrics-section">
+        <div className="metrics-grid">
+          <div className="metric-box">
+            <span className="metric-value">3+</span>
+            <span className="metric-label">Universos Catalogados</span>
+          </div>
+          <div className="metric-box">
+            <span className="metric-value">25+</span>
+            <span className="metric-label">Sesiones Crónicas</span>
+          </div>
+          <div className="metric-box">
+            <span className="metric-value">100%</span>
+            <span className="metric-label">Wikis Aisladas por Mundo</span>
+          </div>
+          <div className="metric-box">
+            <span className="metric-value">VTT 24/7</span>
+            <span className="metric-label">Soporte Foundry Integrado</span>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- 7. ADD CAMPAIGN MODAL ---------------- */}
       {showAddModal && (
         <div className="scifi-modal-overlay" onClick={() => setShowAddModal(false)}>
           <div className="scifi-modal-dialog" onClick={(e) => e.stopPropagation()}>

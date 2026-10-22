@@ -31,43 +31,7 @@ export const SciFiLayout: FC = () => {
                   className={({ isActive }) => (isActive ? 'active' : '')}
                 >
                   <i className="fas fa-globe-americas" />
-                  <span>Campañas</span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/wiki/bttf"
-                  className={({ isActive }) => (isActive ? 'active' : '')}
-                >
-                  <i className="fas fa-book-journal-whills" />
-                  <span>Wiki de Lore</span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/wiki/bttf/trifarix"
-                  className={({ isActive }) => (isActive ? 'active' : '')}
-                >
-                  <i className="fas fa-shield-halved" />
-                  <span>Facciones</span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/wiki/bttf/kelberos-bloodfallen"
-                  className={({ isActive }) => (isActive ? 'active' : '')}
-                >
-                  <i className="fas fa-user-astronaut" />
-                  <span>Personajes</span>
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/wiki/bttf/back-to-the-future-past-and-future"
-                  className={({ isActive }) => (isActive ? 'active' : '')}
-                >
-                  <i className="fas fa-dice-d20" />
-                  <span>Reglas BTTF</span>
+                  <span>Campañas & Universos</span>
                 </NavLink>
               </li>
             </ul>
@@ -111,42 +75,16 @@ export const SciFiLayout: FC = () => {
           <div className="footer-brand">
             <h4>MULTIVERSE OF MADNESS</h4>
             <p>
-              Plataforma y enciclopedia canónica de campañas de rol de mesa. Ciencia ficción dura,
-              magia arcana de los Eones y narrativas caóticas ambientadas en dimensiones convergentes.
+              Plataforma y enciclopedia canónica de campañas de rol de mesa. Ciencia ficción, magia
+              arcana de los Eones y narrativas caóticas ambientadas en dimensiones convergentes.
             </p>
           </div>
 
           <div className="footer-col">
-            <h5>Exploración</h5>
+            <h5>Navegación</h5>
             <ul>
               <li>
                 <Link to="/campaigns">Centro de Campañas</Link>
-              </li>
-              <li>
-                <Link to="/wiki/bttf">Wiki Completa (29 Artículos)</Link>
-              </li>
-              <li>
-                <Link to="/wiki/bttf/trifarix">La Trifarix & Familias</Link>
-              </li>
-              <li>
-                <Link to="/wiki/bttf/eones">Crónicas de los Eones</Link>
-              </li>
-            </ul>
-          </div>
-
-          <div className="footer-col">
-            <h5>Campaña Activa</h5>
-            <ul>
-              <li>
-                <Link to="/wiki/bttf/back-to-the-future-past-and-future">
-                  Back To The Future: Past & Future
-                </Link>
-              </li>
-              <li>
-                <Link to="/wiki/bttf/dimension21-volkxus">Dimensión 21: Volkxus</Link>
-              </li>
-              <li>
-                <Link to="/wiki/bttf/golden-21">Proyecto Golden-21</Link>
               </li>
               <li>
                 <a
@@ -157,20 +95,38 @@ export const SciFiLayout: FC = () => {
                   Servidor Foundry VTT
                 </a>
               </li>
+              <li>
+                <Link to="/login">Acceso Terminal ZRK</Link>
+              </li>
             </ul>
           </div>
 
           <div className="footer-col">
-            <h5>Sistema & DM</h5>
+            <h5>Sistemas de Rol</h5>
             <ul>
               <li>
-                <span className="text-secondary">DM: Luis Medina (Luismi)</span>
+                <span className="text-secondary">D&D 5E Narrativa Caótica</span>
               </li>
               <li>
-                <span className="text-secondary">Sistema: D&D 5E Narrativa Caótica</span>
+                <span className="text-secondary">Cyber-Ops Táctico</span>
               </li>
               <li>
-                <Link to="/login">Acceso Terminal ZRK</Link>
+                <span className="text-secondary">Horror Cósmico & Eones</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="footer-col">
+            <h5>Comunidad & DM</h5>
+            <ul>
+              <li>
+                <span className="text-secondary">Host: Luis Medina (Luismi)</span>
+              </li>
+              <li>
+                <span className="text-secondary">Protocolo: Foundry VTT 24/7</span>
+              </li>
+              <li>
+                <span className="text-secondary">Ciudadela ZAREK // Multiverso</span>
               </li>
             </ul>
           </div>
