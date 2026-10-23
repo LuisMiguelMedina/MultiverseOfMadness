@@ -48,56 +48,23 @@
     .brand-mark {
       display: flex;
       align-items: center;
-      gap: 12px;
       text-decoration: none;
       cursor: pointer;
 
-      .brand-crest {
-        width: 38px;
-        height: 38px;
-        border-radius: 8px;
-        background: linear-gradient(135deg, #00ffff 0%, #0066ff 50%, #9900ff 100%);
-        padding: 2px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+      .brand-title-main {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        color: #ffffff;
+        line-height: 1.1;
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+        transition: color 0.2s ease, text-shadow 0.2s ease;
 
-        .crest-inner {
-          width: 100%;
-          height: 100%;
-          background: #090b14;
-          border-radius: 6px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          overflow: hidden;
-          padding: 3px;
-
-          .brand-crest-icon {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.6));
-          }
+        &:hover {
+          color: #00ffff;
+          text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
         }
-      }
-
-      .brand-titles {
-        display: flex;
-        flex-direction: column;
-
-        .brand-title-main {
-          font-family: 'Space Grotesk', sans-serif;
-          font-size: 1.15rem;
-          font-weight: 700;
-          letter-spacing: 0.05em;
-          color: #ffffff;
-          line-height: 1.1;
-          text-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
-        }
-
-
       }
     }
 
@@ -226,80 +193,13 @@
   /* Sci-Fi Global Footer */
   .scifi-footer {
     background: #040509;
-    border-top: 1px solid rgba(0, 255, 255, 0.15);
-    padding: 3rem 2rem 2rem;
-    margin-top: 4rem;
-
-    .footer-inner {
-      max-width: 1440px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr;
-      gap: 2.5rem;
-      margin-bottom: 2.5rem;
-
-      @media (max-width: 991px) {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      @media (max-width: 576px) {
-        grid-template-columns: 1fr;
-      }
-
-      .footer-brand {
-        h4 {
-          font-family: 'Space Grotesk', sans-serif;
-          font-size: 1.25rem;
-          color: #ffffff;
-          margin-bottom: 0.6rem;
-        }
-
-        p {
-          color: #7b86a8;
-          font-size: 0.88rem;
-          line-height: 1.6;
-          max-width: 360px;
-        }
-      }
-
-      .footer-col {
-        h5 {
-          font-family: 'JetBrains Mono', monospace;
-          font-size: 0.8rem;
-          color: #00ffff;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          margin-bottom: 1rem;
-        }
-
-        ul {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-
-          li {
-            margin-bottom: 0.5rem;
-
-            a {
-              color: #8c98ba;
-              font-size: 0.85rem;
-              text-decoration: none;
-              transition: color 0.2s ease;
-
-              &:hover {
-                color: #ffffff;
-              }
-            }
-          }
-        }
-      }
-    }
+    border-top: 1px solid rgba(0, 255, 255, 0.12);
+    padding: 1.5rem 2rem;
+    margin-top: 3rem;
 
     .footer-bottom {
       max-width: 1440px;
       margin: 0 auto;
-      padding-top: 1.5rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;

@@ -68,6 +68,10 @@ export const CampaignHub: FC = () => {
         <h1 className="header-main-title">
           Campañas
         </h1>
+        <p className="header-tagline-quote">
+          Los universos más cercanos a nosotros no tienen las mismas historias que contar, pero una
+          verdad tienen todos. Somos y seremos pertenecientes al dictamen del cosmos
+        </p>
       </header>
 
       {errorMessage && (
@@ -90,14 +94,6 @@ export const CampaignHub: FC = () => {
           campaigns={allCampaigns}
           onAddNewWorld={() => setShowAddModal(true)}
         />
-
-        {/* Tagline quote positioned underneath the carousel */}
-        <div className="hub-carousel-quote">
-          <p className="quote-text">
-            Los universos más cercanos a nosotros no tienen las mismas historias que contar, pero una
-            verdad tienen todos. Somos y seremos pertenecientes al dictamen del cosmos
-          </p>
-        </div>
       </section>
 
       {/* ---------------- 3. ADD CAMPAIGN MODAL ---------------- */}
