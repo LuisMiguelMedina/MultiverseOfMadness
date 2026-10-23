@@ -203,14 +203,15 @@ export class CalendarDataAccess {
    * Generates a standard RFC 5545 iCalendar (.ics) string with all events and recurrences.
    * Can be imported or subscribed to in Google Calendar, Apple Calendar, or Outlook.
    */
-  public static GenerateIcsCalendar(events: CalendarEvent[]): string {
+  public static GenerateIcsCalendar(events: CalendarEvent[], calendarName?: string): string {
+    const calName = calendarName || 'Multiverse of Madness - Calendario de Campañas';
     const lines: string[] = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
       'PRODID:-//Multiverse of Madness//TTRPG Community Calendar//ES',
       'CALSCALE:GREGORIAN',
       'METHOD:PUBLISH',
-      'X-WR-CALNAME:Multiverse of Madness - Calendario de Campañas',
+      `X-WR-CALNAME:${calName}`,
       'X-WR-TIMEZONE:America/Mexico_City',
       'X-WR-CALDESC:Calendario canónico de partidas y eventos de rol de Multiverse of Madness',
     ];

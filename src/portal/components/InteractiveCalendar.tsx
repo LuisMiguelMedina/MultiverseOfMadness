@@ -9,9 +9,11 @@ import {
 import { CalendarDataAccess } from '../dataAccess/CalendarDataAccess';
 import './InteractiveCalendar.scss';
 
+type FollowTab = 'FULL' | 'DM' | 'EVENT';
+
 export const InteractiveCalendar: FC = () => {
-  // Calendar always displays the current month as requested
-  const [currentDate] = useState<Date>(() => new Date(2026, 9, 23)); // Octubre 2026 (or new Date())
+  // Calendar displays the current month (defaults to Octubre 2026 as per manual spec)
+  const [currentDate] = useState<Date>(() => new Date(2026, 9, 23));
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [isSyncing, setIsSyncing] = useState<boolean>(true);
   const [syncStatus, setSyncStatus] = useState<string>('Sincronizando con Firebase...');
@@ -19,6 +21,9 @@ export const InteractiveCalendar: FC = () => {
   // Modals state
   const [showEventModal, setShowEventModal] = useState<boolean>(false);
   const [showFollowModal, setShowFollowModal] = useState<boolean>(false);
+  const [followTab, setFollowTab] = useState<FollowTab>('FULL');
+  const [selectedFollowDm, setSelectedFollowDm] = useState<string>('PAC');
+  const [selectedFollowEventId, setSelectedFollowEventId] = useState<string>('');
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
 
   // Form state
@@ -42,6 +47,10 @@ export const InteractiveCalendar: FC = () => {
         setEvents(loadedEvents);
         setIsSyncing(false);
         setSyncStatus('Sincronizado en tiempo real');
+
+        if (loadedEvents.length > 0 && !selectedFollowEventId) {
+          setSelectedFollowEventId(loadedEvents[0].id);
+        }
       },
       (errorMsg) => {
         setIsSyncing(false);
@@ -52,7 +61,7 @@ export const InteractiveCalendar: FC = () => {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [selectedFollowEventId]);
 
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth(); // 0-indexed: 9 = Octubre
@@ -111,7 +120,6 @@ export const InteractiveCalendar: FC = () => {
       const baseWeekday = baseEventDate.getDay();
 
       if (evt.recurrence === 'NONE') {
-        // Single occurrence
         const list = map.get(evt.date) || [];
         list.push({ event: evt, instanceDate: evt.date, isRecurringInstance: false });
         map.set(evt.date, list);
@@ -122,7 +130,7 @@ export const InteractiveCalendar: FC = () => {
       const totalDaysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
       for (let d = 1; d <= totalDaysInMonth; d++) {
         const checkDate = new Date(currentYear, currentMonth, d);
-        if (checkDate < baseEventDate) continue; // Do not expand before event creation start date
+        if (checkDate < baseEventDate) continue;
 
         const checkWeekday = checkDate.getDay();
         if (checkWeekday !== baseWeekday) continue;
@@ -134,7 +142,6 @@ export const InteractiveCalendar: FC = () => {
           list.push({ event: evt, instanceDate: dateStr, isRecurringInstance: dateStr !== evt.date });
           map.set(dateStr, list);
         } else if (evt.recurrence === 'BIWEEKLY') {
-          // Difference in days must be divisible by 14
           const diffMs = checkDate.getTime() - baseEventDate.getTime();
           const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
           if (diffDays % 14 === 0) {
@@ -184,7 +191,6 @@ export const InteractiveCalendar: FC = () => {
     setFormAuthor(evt.authorTag || 'LUISMI');
     setFormCategory(evt.categoryTag || 'CAMPAÑA');
 
-    // Match style preset or custom
     const matchedPreset = PRESET_EVENT_STYLES.find((p) => p.background === evt.colorVariant);
     if (matchedPreset) {
       setFormStyleId(matchedPreset.id);
@@ -216,7 +222,6 @@ export const InteractiveCalendar: FC = () => {
       return;
     }
 
-    // Determine color
     let colorVariant = '#38b6ff';
     let textColor = '#000000';
     if (formStyleId === 'custom' && formCustomColor) {
@@ -273,21 +278,65 @@ export const InteractiveCalendar: FC = () => {
     }
   };
 
-  // Download .ICS calendar file for Google Calendar import
-  const handleDownloadIcs = () => {
-    const icsContent = CalendarDataAccess.GenerateIcsCalendar(events);
-    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+  // Helper to trigger file download
+  const downloadBlob = (content: string, filename: string) => {
+    const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `multiverse-calendario-${currentYear}-${currentMonth + 1}.ics`);
+    link.setAttribute('download', filename);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   };
 
+  // Download full calendar .ICS
+  const handleDownloadFullIcs = () => {
+    const icsContent = CalendarDataAccess.GenerateIcsCalendar(
+      events,
+      'Multiverse of Madness - Calendario Completo',
+    );
+    downloadBlob(icsContent, `multiverse-completo-${currentYear}-${currentMonth + 1}.ics`);
+  };
+
+  // Download DM specific .ICS
+  const handleDownloadDmIcs = (dm: string) => {
+    const dmEvents = events.filter((e) => e.authorTag.toUpperCase() === dm.toUpperCase());
+    const icsContent = CalendarDataAccess.GenerateIcsCalendar(
+      dmEvents,
+      `Multiverse of Madness - Partidas de ${dm}`,
+    );
+    downloadBlob(icsContent, `multiverse-dm-${dm.toLowerCase()}-${currentYear}-${currentMonth + 1}.ics`);
+  };
+
+  // Download Single Event .ICS
+  const handleDownloadSingleEventIcs = (event: CalendarEvent) => {
+    const icsContent = CalendarDataAccess.GenerateIcsCalendar(
+      [event],
+      `Multiverse of Madness - ${event.title}`,
+    );
+    const safeTitle = event.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    downloadBlob(icsContent, `multiverse-evento-${safeTitle}.ics`);
+  };
+
+  // Open follow modal with specific tab
+  const handleOpenFollowModal = (tab: FollowTab) => {
+    setFollowTab(tab);
+    setShowFollowModal(true);
+  };
+
   const weekdays = ['DOMINGO', 'LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO'];
+
+  // Filter events for the selected DM in the follow modal
+  const dmEventsList = useMemo(() => {
+    return events.filter((e) => e.authorTag.toUpperCase() === selectedFollowDm.toUpperCase());
+  }, [events, selectedFollowDm]);
+
+  // Current selected event in the follow modal
+  const currentFollowEvent = useMemo(() => {
+    return events.find((e) => e.id === selectedFollowEventId) || events[0] || null;
+  }, [events, selectedFollowEventId]);
 
   return (
     <div className="interactive-calendar-wrapper">
@@ -327,7 +376,7 @@ export const InteractiveCalendar: FC = () => {
           </div>
         </div>
 
-        {/* Actions bar */}
+        {/* Actions bar with Seguir Completo, Seguir DM, Seguir Evento */}
         <div className="calendar-action-toolbar">
           <button
             type="button"
@@ -341,12 +390,32 @@ export const InteractiveCalendar: FC = () => {
 
           <button
             type="button"
-            className="btn-calendar-google"
-            onClick={() => setShowFollowModal(true)}
-            title="Sincronizar y seguir este calendario en Google Calendar"
+            className="btn-calendar-follow btn-follow-full"
+            onClick={() => handleOpenFollowModal('FULL')}
+            title="Seguir el calendario completo en Google Calendar"
           >
             <i className="fab fa-google me-1" />
-            Seguir calendario
+            Seguir Calendario Completo
+          </button>
+
+          <button
+            type="button"
+            className="btn-calendar-follow btn-follow-dm"
+            onClick={() => handleOpenFollowModal('DM')}
+            title="Seguir partidas de un DM en particular"
+          >
+            <i className="fas fa-user-shield me-1" />
+            Seguir DM
+          </button>
+
+          <button
+            type="button"
+            className="btn-calendar-follow btn-follow-event"
+            onClick={() => handleOpenFollowModal('EVENT')}
+            title="Seguir un evento o campaña específica en Google Calendar"
+          >
+            <i className="fas fa-dice-d20 me-1" />
+            Seguir Evento
           </button>
         </div>
       </div>
@@ -380,7 +449,6 @@ export const InteractiveCalendar: FC = () => {
                 key={cell.dateString}
                 className={`calendar-cell cell-active ${isToday ? 'cell-today' : ''}`}
                 onClick={(e) => {
-                  // Only open if clicked directly on cell background
                   if (e.target === e.currentTarget) {
                     handleOpenCreateModal(cell.dateString!);
                   }
@@ -626,14 +694,14 @@ export const InteractiveCalendar: FC = () => {
         </div>
       )}
 
-      {/* ---------------- 4. "SEGUIR CALENDARIO" GOOGLE CALENDAR MODAL ---------------- */}
+      {/* ---------------- 4. "SEGUIR CALENDARIO" MULTI-MODO (COMPLETO / DM / EVENTO) ---------------- */}
       {showFollowModal && (
         <div className="calendar-modal-backdrop" onClick={() => setShowFollowModal(false)}>
           <div className="calendar-modal-container follow-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header-cyber">
               <h3>
                 <i className="fab fa-google me-2 text-info" />
-                Seguir Calendario en Google Calendar
+                Seguir en Google Calendar
               </h3>
               <button
                 type="button"
@@ -644,61 +712,264 @@ export const InteractiveCalendar: FC = () => {
               </button>
             </div>
 
+            {/* Mode selection tabs */}
+            <div className="follow-modal-tabs">
+              <button
+                type="button"
+                className={`tab-btn ${followTab === 'FULL' ? 'active' : ''}`}
+                onClick={() => setFollowTab('FULL')}
+              >
+                <i className="fas fa-globe me-1" />
+                Calendario Completo
+              </button>
+              <button
+                type="button"
+                className={`tab-btn ${followTab === 'DM' ? 'active' : ''}`}
+                onClick={() => setFollowTab('DM')}
+              >
+                <i className="fas fa-user-shield me-1" />
+                Seguir por DM
+              </button>
+              <button
+                type="button"
+                className={`tab-btn ${followTab === 'EVENT' ? 'active' : ''}`}
+                onClick={() => setFollowTab('EVENT')}
+              >
+                <i className="fas fa-dice-d20 me-1" />
+                Seguir Evento
+              </button>
+            </div>
+
             <div className="follow-modal-body">
-              <p className="follow-intro">
-                Mantente al día con todas las sesiones y eventos de <strong>Multiverse of Madness</strong> sincronizándolos
-                directamente en tu Google Calendar en tu PC o dispositivo móvil.
-              </p>
-
-              <div className="follow-options-grid">
-                {/* Option A: Download ICS */}
-                <div className="follow-card">
-                  <div className="card-icon-box">
-                    <i className="fas fa-file-download" />
-                  </div>
-                  <h4>Descargar Archivo .ICS</h4>
-                  <p>
-                    Exporta instantáneamente todas las partidas actuales y recurrentes para importarlas en Google Calendar,
-                    Apple Calendar u Outlook.
+              {/* TAB 1: CALENDARIO COMPLETO */}
+              {followTab === 'FULL' && (
+                <div className="tab-content-panel">
+                  <p className="follow-intro">
+                    Sincroniza <strong>todas las campañas y eventos del multiverso ({events.length} crónicas)</strong> en
+                    tu Google Calendar personal.
                   </p>
-                  <button type="button" className="btn-action-primary" onClick={handleDownloadIcs}>
-                    <i className="fas fa-download me-1" />
-                    Descargar .ICS Actualizado
-                  </button>
-                </div>
 
-                {/* Option B: Open Google Calendar Import */}
-                <div className="follow-card">
-                  <div className="card-icon-box">
-                    <i className="fab fa-google" />
+                  <div className="follow-options-grid">
+                    <div className="follow-card">
+                      <div className="card-icon-box">
+                        <i className="fas fa-calendar-check" />
+                      </div>
+                      <h4>Descargar .ICS Completo</h4>
+                      <p>
+                        Exporta todas las fechas, horas y recurrencias de todas las campañas en formato iCalendar estándar.
+                      </p>
+                      <button type="button" className="btn-action-primary" onClick={handleDownloadFullIcs}>
+                        <i className="fas fa-download me-1" />
+                        Descargar Todo (.ICS)
+                      </button>
+                    </div>
+
+                    <div className="follow-card">
+                      <div className="card-icon-box">
+                        <i className="fab fa-google" />
+                      </div>
+                      <h4>Importar en Google Calendar</h4>
+                      <p>
+                        Abre la consola de Google Calendar para subir el archivo descargado y sincronizar tu cuenta.
+                      </p>
+                      <a
+                        href="https://calendar.google.com/calendar/u/0/r/settings/export"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn-action-secondary"
+                      >
+                        <i className="fas fa-external-link-alt me-1" />
+                        Abrir Google Calendar Import
+                      </a>
+                    </div>
                   </div>
-                  <h4>Abrir en Google Calendar</h4>
-                  <p>
-                    Abre la consola de Google Calendar para añadir el archivo descargado o suscribirte a calendarios externos.
-                  </p>
-                  <a
-                    href="https://calendar.google.com/calendar/u/0/r/settings/export"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="btn-action-secondary"
-                  >
-                    <i className="fas fa-external-link-alt me-1" />
-                    Ir a Google Calendar Import
-                  </a>
                 </div>
-              </div>
+              )}
 
-              <div className="follow-instructions-box">
+              {/* TAB 2: SEGUIR POR DM */}
+              {followTab === 'DM' && (
+                <div className="tab-content-panel">
+                  <p className="follow-intro">
+                    Elige el Game Master que deseas seguir para agregar <strong>únicamente sus partidas</strong> a tu
+                    Google Calendar.
+                  </p>
+
+                  <div className="dm-selector-box mb-3">
+                    <label className="section-small-label">Selecciona tu Game Master / Organizador:</label>
+                    <div className="dm-pills-row">
+                      {DEFAULT_TAGS.filter((t) => t.category === 'AUTHOR').map((tag) => (
+                        <button
+                          key={tag.id}
+                          type="button"
+                          className={`dm-pick-btn ${selectedFollowDm === tag.label ? 'active' : ''}`}
+                          style={{
+                            background: tag.color,
+                            color: tag.textColor,
+                          }}
+                          onClick={() => setSelectedFollowDm(tag.label)}
+                        >
+                          {tag.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="dm-events-summary-card">
+                    <div className="dm-card-header">
+                      <h5>
+                        Partidas programadas por <strong>{selectedFollowDm}</strong> ({dmEventsList.length})
+                      </h5>
+                      {dmEventsList.length > 0 && (
+                        <button
+                          type="button"
+                          className="btn-dm-download-ics"
+                          onClick={() => handleDownloadDmIcs(selectedFollowDm)}
+                          title={`Descargar archivo .ICS con todas las partidas de ${selectedFollowDm}`}
+                        >
+                          <i className="fas fa-download me-1" />
+                          Descargar .ICS de {selectedFollowDm}
+                        </button>
+                      )}
+                    </div>
+
+                    {dmEventsList.length === 0 ? (
+                      <p className="text-muted font-monospace py-2">
+                        No hay partidas activas registradas con el DM {selectedFollowDm} en este momento.
+                      </p>
+                    ) : (
+                      <div className="dm-events-items-list">
+                        {dmEventsList.map((evt) => (
+                          <div key={evt.id} className="dm-event-item-row">
+                            <div className="dm-event-info">
+                              <span
+                                className="dm-event-badge"
+                                style={{ background: evt.colorVariant, color: evt.textColor }}
+                              >
+                                {evt.time}
+                              </span>
+                              <strong className="dm-event-name">{evt.title}</strong>
+                              <span className="dm-event-recur">
+                                {evt.recurrence === 'WEEKLY'
+                                  ? '(Semanal)'
+                                  : evt.recurrence === 'BIWEEKLY'
+                                  ? '(Quincenal)'
+                                  : '(Único)'}
+                              </span>
+                            </div>
+
+                            <a
+                              href={CalendarDataAccess.GetGoogleCalendarDirectUrl(evt)}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="btn-gcal-quick-link"
+                              title="Añadir esta serie directamente a Google Calendar en 1 clic"
+                            >
+                              <i className="fab fa-google me-1" />
+                              Añadir a Google Calendar (1 Clic)
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 3: SEGUIR EVENTO ESPECÍFICO */}
+              {followTab === 'EVENT' && (
+                <div className="tab-content-panel">
+                  <p className="follow-intro">
+                    Selecciona una crónica o evento específico para sincronizar su serie completa directamente en tu cuenta de
+                    Google Calendar con 1 clic.
+                  </p>
+
+                  <div className="form-row mb-3">
+                    <label className="section-small-label">Selecciona el Evento o Campaña:</label>
+                    <select
+                      value={currentFollowEvent ? currentFollowEvent.id : ''}
+                      onChange={(e) => setSelectedFollowEventId(e.target.value)}
+                    >
+                      {events.map((evt) => (
+                        <option key={evt.id} value={evt.id}>
+                          {evt.title} ({evt.time}) — DM: {evt.authorTag}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {currentFollowEvent && (
+                    <div className="event-focus-card">
+                      <div className="event-focus-header">
+                        <span
+                          className="event-focus-pill"
+                          style={{
+                            background: currentFollowEvent.colorVariant,
+                            color: currentFollowEvent.textColor,
+                          }}
+                        >
+                          {currentFollowEvent.title}
+                        </span>
+                        <span className="event-focus-time">
+                          <i className="fas fa-clock me-1 text-cyan" />
+                          {currentFollowEvent.time}
+                        </span>
+                      </div>
+
+                      <div className="event-focus-details">
+                        <p>
+                          <strong>Organizador:</strong> {currentFollowEvent.authorTag}
+                        </p>
+                        <p>
+                          <strong>Frecuencia:</strong>{' '}
+                          {currentFollowEvent.recurrence === 'WEEKLY'
+                            ? 'Cada semana (Semanal)'
+                            : currentFollowEvent.recurrence === 'BIWEEKLY'
+                            ? 'Cada 2 semanas (Quincenal)'
+                            : 'Evento único'}
+                        </p>
+                        {currentFollowEvent.description && (
+                          <p>
+                            <strong>Detalles:</strong> {currentFollowEvent.description}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="event-focus-actions">
+                        <a
+                          href={CalendarDataAccess.GetGoogleCalendarDirectUrl(currentFollowEvent)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="btn-gcal-prominent"
+                        >
+                          <i className="fab fa-google me-2" />
+                          Añadir esta serie a mi Google Calendar (1 Clic)
+                        </a>
+
+                        <button
+                          type="button"
+                          className="btn-action-download-event"
+                          onClick={() => handleDownloadSingleEventIcs(currentFollowEvent)}
+                        >
+                          <i className="fas fa-download me-1" />
+                          Descargar .ICS del Evento
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Instructions footer */}
+              <div className="follow-instructions-box mt-3">
                 <h5>
                   <i className="fas fa-info-circle me-1 text-cyan" />
-                  ¿Cómo mantenerlo sincronizado en Google Calendar?
+                  ¿Cómo funciona la sincronización?
                 </h5>
-                <ol>
-                  <li>Descarga el archivo <code>.ics</code> con el botón de arriba.</li>
-                  <li>Ve a Google Calendar &gt; Ajustes &gt; <strong>Importar y exportar</strong>.</li>
-                  <li>Selecciona el archivo descargado y haz clic en <strong>Importar</strong>.</li>
-                  <li>¡Listo! Todas las partidas y recordatorios con su hora obligatoria aparecerán en tu calendario.</li>
-                </ol>
+                <p className="mb-0">
+                  El botón <strong>Añadir a Google Calendar (1 Clic)</strong> abre directamente la interfaz de Google Calendar
+                  con el título, la hora obligatoria, la ubicación en Foundry VTT y la regla de recurrencia ya configurada.
+                  También puedes usar los archivos <code>.ics</code> para importarlos en tu teléfono o aplicación de escritorio.
+                </p>
               </div>
             </div>
 
