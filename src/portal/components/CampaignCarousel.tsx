@@ -237,20 +237,6 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
           <div className="banner-top-tags">
             <div className="banner-tags-left">
               {getStatusBadge(camp.CampaignStatus)}
-              {activeDebug && (
-                <button
-                  type="button"
-                  className="badge-debug-edit-tool"
-                  title="Editar Crónica (Modo ?debug=1)"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEditCampaign?.(camp);
-                  }}
-                >
-                  <i className="fas fa-pen-to-square me-1" />
-                  <span>Editar</span>
-                </button>
-              )}
             </div>
           </div>
         </div>
@@ -368,22 +354,6 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
                   </a>
                 );
               })}
-
-            {activeDebug && (
-              <button
-                type="button"
-                className="btn-card-debug-action-edit"
-                title="Editar esta campaña (?debug=1)"
-                onClick={(e) => {
-                  if (position !== 'center') e.preventDefault();
-                  e.stopPropagation();
-                  onEditCampaign?.(camp);
-                }}
-              >
-                <i className="fas fa-feather-pointed me-1" />
-                <span>Editar</span>
-              </button>
-            )}
           </div>
 
           {/* ZRK Intranet (Sci-Fi) integrado dentro de la card de Back To The Future */}
