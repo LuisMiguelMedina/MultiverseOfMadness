@@ -582,7 +582,8 @@ export const InteractiveCalendar: FC = () => {
             </div>
 
             <form onSubmit={handleSaveEvent} className="modal-form-cyber">
-              {formError && (
+              <div className="modal-body-scrollable">
+                {formError && (
                 <div className="form-error-alert" role="alert">
                   <i className="fas fa-exclamation-circle me-1" />
                   {formError}
@@ -701,6 +702,8 @@ export const InteractiveCalendar: FC = () => {
                   value={formDesc}
                   onChange={(e) => setFormDesc(e.target.value)}
                 />
+              </div>
+
               </div>
 
               {/* Modal Actions */}
