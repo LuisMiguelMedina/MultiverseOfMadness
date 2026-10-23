@@ -20,8 +20,6 @@ export const InteractiveCalendar: FC = () => {
   }, [monthOffset]);
 
   const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [isSyncing, setIsSyncing] = useState<boolean>(true);
-  const [syncStatus, setSyncStatus] = useState<string>('Sincronizando con Firebase...');
 
   // Modals state
   const [showEventModal, setShowEventModal] = useState<boolean>(false);
@@ -46,20 +44,16 @@ export const InteractiveCalendar: FC = () => {
 
   // Subscribe to Firebase RTDB on mount
   useEffect(() => {
-    setIsSyncing(true);
     const unsubscribe = CalendarDataAccess.SubscribeEvents(
       (loadedEvents) => {
         setEvents(loadedEvents);
-        setIsSyncing(false);
-        setSyncStatus('Sincronizado en tiempo real');
 
         if (loadedEvents.length > 0 && !selectedFollowEventId) {
           setSelectedFollowEventId(loadedEvents[0].id);
         }
       },
       (errorMsg) => {
-        setIsSyncing(false);
-        setSyncStatus(`Offline (${errorMsg})`);
+        console.warn('Calendar sync error:', errorMsg);
       },
     );
 
@@ -401,11 +395,6 @@ export const InteractiveCalendar: FC = () => {
             >
               Noviembre 2026 (Siguiente)
             </button>
-          </div>
-
-          <div className="calendar-sync-indicator" title="Estado de conexión con Firebase">
-            <span className={`sync-dot ${isSyncing ? 'pulse' : 'online'}`} />
-            <span className="sync-text">{syncStatus}</span>
           </div>
         </div>
 
