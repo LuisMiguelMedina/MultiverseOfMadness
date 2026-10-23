@@ -221,14 +221,16 @@ export const CampaignHub: FC = () => {
 
       {/* ---------------- 2. CENTRALIZED WORLD SELECTOR CAROUSEL ---------------- */}
       <section className="hub-carousel-section">
-        <CampaignCarousel
-          campaigns={allCampaigns}
-          isDebug={isDebug}
-          onAddNewWorld={() => {
-            if (isDebug) setShowAddModal(true);
-          }}
-          onEditCampaign={handleOpenEditModal}
-        />
+        {!isLoading && (allCampaigns.length > 0 || isDebug) && (
+          <CampaignCarousel
+            campaigns={allCampaigns}
+            isDebug={isDebug}
+            onAddNewWorld={() => {
+              if (isDebug) setShowAddModal(true);
+            }}
+            onEditCampaign={handleOpenEditModal}
+          />
+        )}
       </section>
 
       {/* ---------------- 3. INTERACTIVE SHARED CALENDAR (FIREBASE RTDB & GCAL) ---------------- */}

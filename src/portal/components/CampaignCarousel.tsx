@@ -54,10 +54,12 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
   }, [items.length, currentIndex]);
 
   const handlePrev = useCallback(() => {
+    if (total <= 0) return;
     setCurrentIndex((prev) => (prev - 1 + total) % total);
   }, [total]);
 
   const handleNext = useCallback(() => {
+    if (total <= 0) return;
     setCurrentIndex((prev) => (prev + 1) % total);
   }, [total]);
 
@@ -105,7 +107,15 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
   };
 
   // Helper to render an item card
-  const renderCard = (item: CarouselItem, position: 'center' | 'prev' | 'next', idx: number) => {
+  const renderCard = (
+    item: CarouselItem | undefined,
+    position: 'center' | 'prev' | 'next',
+    idx: number,
+  ) => {
+    if (!item) {
+      return null;
+    }
+
     if (item.isAddSlot) {
       return (
         <div
@@ -344,6 +354,10 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
     );
   };
 
+  if (total === 0) {
+    return null;
+  }
+
   const prevIndex = (currentIndex - 1 + total) % total;
   const nextIndex = (currentIndex + 1) % total;
 
@@ -391,9 +405,9 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
             onClick={() => setCurrentIndex(idx)}
             aria-label={`Ir al mundo ${idx + 1}`}
             title={
-              it.isAddSlot
+              it?.isAddSlot
                 ? 'Registrar nuevo mundo'
-                : `Seleccionar ${it.campaign.CampaignTitle}`
+                : `Seleccionar ${it?.campaign?.CampaignTitle || 'Crónica'}`
             }
           />
         ))}
