@@ -5,7 +5,7 @@
 
 .interactive-calendar-wrapper {
   width: 100%;
-  max-width: 980px;
+  max-width: 660px;
   margin: 1.5rem auto 0;
   padding: 0 1rem;
 
@@ -305,7 +305,8 @@
 
       .calendar-cell {
         background: #ffffff;
-        min-height: 82px;
+        min-height: 98px;
+        aspect-ratio: 1 / 1.08;
         padding: 5px 6px;
         display: flex;
         flex-direction: column;
@@ -313,7 +314,7 @@
         position: relative;
 
         @media (max-width: 768px) {
-          min-height: 64px;
+          min-height: 52px;
           padding: 3px 4px;
         }
 
