@@ -114,21 +114,8 @@ export const CampaignCard: FC<CampaignCardProps> = ({ campaign, isFeatured = fal
             className="btn-wiki"
           >
             <i className="fas fa-book-journal-whills" />
-            <span>Acceder a la Wiki</span>
+            <span>Wiki</span>
           </Link>
-
-          {campaign.CampaignFoundryUrl && (
-            <a
-              href={campaign.CampaignFoundryUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="btn-foundry"
-              title="Abrir servidor de Foundry VTT"
-            >
-              <i className="fas fa-play" />
-              <span>Foundry</span>
-            </a>
-          )}
         </div>
       </div>
     </div>

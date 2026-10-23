@@ -292,29 +292,8 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
               }}
             >
               <i className="fas fa-book-open me-1" />
-              <span>Explorar Crónica</span>
+              <span>Wiki</span>
             </Link>
-
-            {camp.CampaignFoundryUrl ? (
-              <a
-                href={camp.CampaignFoundryUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-card-foundry"
-                title="Entrar a la mesa virtual Foundry VTT"
-                onClick={(e) => {
-                  if (position !== 'center') e.preventDefault();
-                }}
-              >
-                <i className="fas fa-dice-d20 me-1" />
-                <span>Mesa VTT</span>
-              </a>
-            ) : (
-              <button type="button" className="btn-card-disabled" disabled>
-                <i className="fas fa-lock me-1" />
-                <span>Mesa Cerrada</span>
-              </button>
-            )}
 
             {activeDebug && (
               <button
@@ -333,19 +312,20 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
             )}
           </div>
 
-          {/* Acceso Aventurero integrado dentro de la card de Back To The Future */}
+          {/* ZRK Intranet (Sci-Fi) integrado dentro de la card de Back To The Future */}
           {isBttf && (
             <div className="card-bttf-auth-row">
               <Link
                 to={session ? '/dashboard' : '/login'}
-                className="btn-card-adventurer"
-                title={session ? `Entrar a la intranet del gremio (${session.username})` : 'Acceso Aventurero'}
+                className="btn-card-zrk-scifi"
+                title={session ? `Acceso a Terminal ZRK Intranet (${session.username})` : 'Acceso a Terminal ZRK Intranet'}
                 onClick={(e) => {
                   if (position !== 'center') e.preventDefault();
                 }}
               >
-                <i className={session ? 'fas fa-shield-halved me-1' : 'fas fa-dungeon me-1'} />
-                <span>{session ? `Gremio (${session.username})` : 'Acceso Aventurero'}</span>
+                <i className="fas fa-terminal me-2 scifi-term-icon" />
+                <span>{session ? `ZRK INTRANET [${session.username}]` : 'ZRK INTRANET'}</span>
+                <span className="scifi-status-pulse" />
               </Link>
             </div>
           )}
