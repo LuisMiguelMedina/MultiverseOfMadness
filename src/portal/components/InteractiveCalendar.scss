@@ -6,11 +6,11 @@
 .interactive-calendar-wrapper {
   width: 100%;
   max-width: 980px;
-  margin: 2rem auto 2rem;
+  margin: 1.5rem auto 0;
   padding: 0 1rem;
 
   @media (max-width: 768px) {
-    margin: 1.5rem auto 1rem;
+    margin: 1rem auto 0;
     padding: 0 0.5rem;
   }
 
@@ -305,16 +305,16 @@
 
       .calendar-cell {
         background: #ffffff;
-        min-height: 54px;
-        padding: 3px 5px;
+        min-height: 82px;
+        padding: 5px 6px;
         display: flex;
         flex-direction: column;
         transition: background 0.15s ease;
         position: relative;
 
         @media (max-width: 768px) {
-          min-height: 44px;
-          padding: 2px 3px;
+          min-height: 64px;
+          padding: 3px 4px;
         }
 
         &.cell-empty {
@@ -346,11 +346,11 @@
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 2px;
+          margin-bottom: 4px;
 
           .day-number {
             font-family: 'Cinzel', Georgia, serif;
-            font-size: 0.76rem;
+            font-size: 0.82rem;
             font-weight: 700;
             color: #111827;
             line-height: 1;
@@ -361,10 +361,10 @@
             background: #e0f2fe;
             border: 1px solid #7dd3fc;
             color: #0369a1;
-            width: 15px;
-            height: 15px;
+            width: 17px;
+            height: 17px;
             border-radius: 3px;
-            font-size: 0.7rem;
+            font-size: 0.76rem;
             line-height: 1;
             display: flex;
             align-items: center;
@@ -383,7 +383,7 @@
         .cell-events-list {
           display: flex;
           flex-direction: column;
-          gap: 2px;
+          gap: 3px;
           flex: 1;
         }
 
@@ -392,8 +392,8 @@
           flex-direction: row;
           align-items: center;
           justify-content: center;
-          gap: 3px;
-          padding: 1.5px 5px;
+          gap: 4px;
+          padding: 2.5px 6px;
           border-radius: 999px;
           border: 1px solid #000000;
           box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
@@ -409,7 +409,7 @@
 
           .pill-time-badge {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.58rem;
+            font-size: 0.60rem;
             font-weight: 800;
             opacity: 0.9;
             letter-spacing: -0.02em;
@@ -418,22 +418,22 @@
 
           .pill-title-text {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.65rem;
+            font-size: 0.68rem;
             font-weight: 800;
             letter-spacing: 0.01em;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 75px;
+            max-width: 85px;
 
             @media (max-width: 768px) {
-              font-size: 0.56rem;
-              max-width: 44px;
+              font-size: 0.58rem;
+              max-width: 50px;
             }
           }
 
           .pill-recurring-icon {
-            font-size: 0.52rem;
+            font-size: 0.54rem;
             opacity: 0.85;
           }
         }

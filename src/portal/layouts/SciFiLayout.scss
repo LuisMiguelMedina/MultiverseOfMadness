@@ -142,8 +142,13 @@
   .scifi-footer {
     background: #08090e;
     border-top: 1px solid rgba(217, 119, 6, 0.25);
-    padding: 1.5rem 2rem;
-    margin-top: 3.5rem;
+    padding: 1.25rem 2rem;
+    margin-top: 1.5rem;
+
+    @media (max-width: 768px) {
+      padding: 1rem;
+      margin-top: 1rem;
+    }
 
     .footer-bottom {
       max-width: 1440px;
