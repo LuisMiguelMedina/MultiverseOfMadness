@@ -1,5 +1,6 @@
 import { FC, useState, useMemo } from 'react';
 import { CampaignCarousel } from '../components/CampaignCarousel';
+import { InteractiveCalendar } from '../components/InteractiveCalendar';
 import { CampaignBase, CampaignStatusType } from '../models/Campaigns/CampaignModels';
 import { useCampaignHubViewModel } from '../viewModels/useCampaignHubViewModel';
 import './CampaignHub.scss';
@@ -94,6 +95,11 @@ export const CampaignHub: FC = () => {
           campaigns={allCampaigns}
           onAddNewWorld={() => setShowAddModal(true)}
         />
+      </section>
+
+      {/* ---------------- 3. INTERACTIVE SHARED CALENDAR (FIREBASE RTDB & GCAL) ---------------- */}
+      <section className="hub-calendar-section">
+        <InteractiveCalendar />
       </section>
 
       {/* ---------------- 3. ADD CAMPAIGN MODAL ---------------- */}
