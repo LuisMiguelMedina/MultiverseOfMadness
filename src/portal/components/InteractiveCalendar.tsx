@@ -486,47 +486,96 @@ export const InteractiveCalendar: FC = () => {
     <div className="interactive-calendar-wrapper">
       {/* ---------------- 1. HEADER & LEGEND BAR ---------------- */}
       <div className="calendar-top-section">
-        <div className="title-and-sync">
-          <div className="month-navigation-wrap">
-            <button
-              type="button"
-              className={`btn-month-nav ${!canGoPrev ? 'disabled' : ''}`}
-              onClick={handlePrevMonth}
-              disabled={!canGoPrev}
-              title={canGoPrev ? 'Volver al mes actual (Octubre 2026)' : 'Límite: este es el mes actual'}
-              aria-label="Mes anterior"
-            >
-              <i className="fas fa-chevron-left" />
-            </button>
+        <div className="calendar-controls-row">
+          <div className="title-and-sync">
+            <div className="month-navigation-wrap">
+              <button
+                type="button"
+                className={`btn-month-nav ${!canGoPrev ? 'disabled' : ''}`}
+                onClick={handlePrevMonth}
+                disabled={!canGoPrev}
+                title={canGoPrev ? 'Volver al mes actual (Octubre 2026)' : 'Límite: este es el mes actual'}
+                aria-label="Mes anterior"
+              >
+                <i className="fas fa-chevron-left" />
+              </button>
 
-            <h2 className="calendar-month-heading">{monthTitle}</h2>
+              <h2 className="calendar-month-heading">{monthTitle}</h2>
 
-            <button
-              type="button"
-              className={`btn-month-nav ${!canGoNext ? 'disabled' : ''}`}
-              onClick={handleNextMonth}
-              disabled={!canGoNext}
-              title={canGoNext ? 'Ver mes siguiente (Noviembre 2026)' : 'Límite: solo se permite ver el mes siguiente'}
-              aria-label="Mes siguiente"
-            >
-              <i className="fas fa-chevron-right" />
-            </button>
+              <button
+                type="button"
+                className={`btn-month-nav ${!canGoNext ? 'disabled' : ''}`}
+                onClick={handleNextMonth}
+                disabled={!canGoNext}
+                title={canGoNext ? 'Ver mes siguiente (Noviembre 2026)' : 'Límite: solo se permite ver el mes siguiente'}
+                aria-label="Mes siguiente"
+              >
+                <i className="fas fa-chevron-right" />
+              </button>
+            </div>
+
+            <div className="month-segmented-toggle">
+              <button
+                type="button"
+                className={`btn-toggle-month ${monthOffset === 0 ? 'active' : ''}`}
+                onClick={() => setMonthOffset(0)}
+              >
+                Octubre 2026 (Actual)
+              </button>
+              <button
+                type="button"
+                className={`btn-toggle-month ${monthOffset === 1 ? 'active' : ''}`}
+                onClick={() => setMonthOffset(1)}
+              >
+                Noviembre 2026 (Siguiente)
+              </button>
+            </div>
           </div>
 
-          <div className="month-segmented-toggle">
+          {/* Actions bar with Seguir Completo, Seguir DM, Seguir Evento */}
+          <div className="calendar-action-toolbar">
             <button
               type="button"
-              className={`btn-toggle-month ${monthOffset === 0 ? 'active' : ''}`}
-              onClick={() => setMonthOffset(0)}
+              className="btn-calendar-add"
+              onClick={() => handleOpenCreateModal()}
+              title="Añadir nueva sesión o evento al calendario compartido"
             >
-              Octubre 2026 (Actual)
+              <i className="fas fa-plus me-1" />
+              <span className="btn-label-desktop">Nuevo Evento</span>
+              <span className="btn-label-mobile">Evento</span>
             </button>
+
             <button
               type="button"
-              className={`btn-toggle-month ${monthOffset === 1 ? 'active' : ''}`}
-              onClick={() => setMonthOffset(1)}
+              className="btn-calendar-follow btn-follow-full"
+              onClick={() => handleOpenFollowModal('FULL')}
+              title="Seguir el calendario completo en Google Calendar"
             >
-              Noviembre 2026 (Siguiente)
+              <i className="fab fa-google me-1" />
+              <span className="btn-label-desktop">Seguir Calendario Completo</span>
+              <span className="btn-label-mobile">Seguir Todo</span>
+            </button>
+
+            <button
+              type="button"
+              className="btn-calendar-follow btn-follow-dm"
+              onClick={() => handleOpenFollowModal('DM')}
+              title="Seguir partidas de un DM en particular"
+            >
+              <i className="fas fa-user-shield me-1" />
+              <span className="btn-label-desktop">Seguir DM</span>
+              <span className="btn-label-mobile">Por DM</span>
+            </button>
+
+            <button
+              type="button"
+              className="btn-calendar-follow btn-follow-event"
+              onClick={() => handleOpenFollowModal('EVENT')}
+              title="Seguir un evento o campaña específica en Google Calendar"
+            >
+              <i className="fas fa-dice-d20 me-1" />
+              <span className="btn-label-desktop">Seguir Evento</span>
+              <span className="btn-label-mobile">Por Evento</span>
             </button>
           </div>
         </div>
@@ -563,7 +612,7 @@ export const InteractiveCalendar: FC = () => {
           </div>
 
           {isDebug && (
-            <div className="legend-debug-toolbar mt-2 d-flex justify-content-end">
+            <div className="legend-debug-toolbar mt-2 d-flex justify-content-center">
               <button
                 type="button"
                 className="btn-debug-manage-tags"
@@ -575,53 +624,6 @@ export const InteractiveCalendar: FC = () => {
               </button>
             </div>
           )}
-        </div>
-
-        {/* Actions bar with Seguir Completo, Seguir DM, Seguir Evento */}
-        <div className="calendar-action-toolbar">
-          <button
-            type="button"
-            className="btn-calendar-add"
-            onClick={() => handleOpenCreateModal()}
-            title="Añadir nueva sesión o evento al calendario compartido"
-          >
-            <i className="fas fa-plus-circle me-1" />
-            <span className="btn-label-desktop">+ Nuevo Evento</span>
-            <span className="btn-label-mobile">+ Evento</span>
-          </button>
-
-          <button
-            type="button"
-            className="btn-calendar-follow btn-follow-full"
-            onClick={() => handleOpenFollowModal('FULL')}
-            title="Seguir el calendario completo en Google Calendar"
-          >
-            <i className="fab fa-google me-1" />
-            <span className="btn-label-desktop">Seguir Calendario Completo</span>
-            <span className="btn-label-mobile">Seguir Todo</span>
-          </button>
-
-          <button
-            type="button"
-            className="btn-calendar-follow btn-follow-dm"
-            onClick={() => handleOpenFollowModal('DM')}
-            title="Seguir partidas de un DM en particular"
-          >
-            <i className="fas fa-user-shield me-1" />
-            <span className="btn-label-desktop">Seguir DM</span>
-            <span className="btn-label-mobile">Por DM</span>
-          </button>
-
-          <button
-            type="button"
-            className="btn-calendar-follow btn-follow-event"
-            onClick={() => handleOpenFollowModal('EVENT')}
-            title="Seguir un evento o campaña específica en Google Calendar"
-          >
-            <i className="fas fa-dice-d20 me-1" />
-            <span className="btn-label-desktop">Seguir Evento</span>
-            <span className="btn-label-mobile">Por Evento</span>
-          </button>
         </div>
       </div>
 

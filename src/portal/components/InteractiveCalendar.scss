@@ -5,63 +5,63 @@
 
 .interactive-calendar-wrapper {
   width: 100%;
-  max-width: 860px;
-  margin: 1.25rem auto 0;
+  max-width: 800px;
+  margin: 1rem auto 0;
   padding: 0 1rem;
 
   @media (max-width: 768px) {
-    margin: 0.75rem auto 0;
+    margin: 0.5rem auto 0;
     padding: 0 0.5rem;
   }
 
   @media (max-width: 480px) {
     padding: 0 0.25rem;
-    margin: 0.5rem auto 0;
+    margin: 0.25rem auto 0;
   }
 
   /* ---------------- 1. HEADER & LEGEND ---------------- */
   .calendar-top-section {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.25rem;
-    margin-bottom: 1.25rem;
-    padding-bottom: 1rem;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+    padding-bottom: 0.75rem;
     border-bottom: 1px solid rgba(245, 158, 11, 0.2);
 
-    @media (max-width: 600px) {
-      flex-direction: column;
+    .calendar-controls-row {
+      display: flex;
       align-items: center;
-      text-align: center;
-      gap: 0.85rem;
-      margin-bottom: 0.85rem;
-      padding-bottom: 0.85rem;
+      justify-content: space-between;
+      width: 100%;
+      gap: 1rem;
+      flex-wrap: wrap;
 
-      .title-and-sync {
+      @media (max-width: 768px) {
+        flex-direction: column;
         align-items: center;
-        width: 100%;
-
-        .month-navigation-wrap {
-          justify-content: center;
-        }
-
-        .month-segmented-toggle {
-          justify-content: center;
-          width: 100%;
-        }
+        text-align: center;
+        gap: 0.75rem;
       }
     }
 
     .title-and-sync {
       display: flex;
       flex-direction: column;
-      gap: 0.45rem;
+      gap: 0.35rem;
+
+      @media (max-width: 768px) {
+        align-items: center;
+        width: 100%;
+      }
 
       .month-navigation-wrap {
         display: flex;
         align-items: center;
         gap: 10px;
+
+        @media (max-width: 768px) {
+          justify-content: center;
+        }
 
         .btn-month-nav {
           width: 30px;
@@ -96,7 +96,7 @@
 
         .calendar-month-heading {
           font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
-          font-size: clamp(1.4rem, 2.5vw, 1.95rem);
+          font-size: clamp(1.25rem, 2.2vw, 1.7rem);
           font-weight: 700;
           color: #ffedd5;
           margin: 0;
@@ -109,6 +109,11 @@
         display: flex;
         align-items: center;
         gap: 6px;
+
+        @media (max-width: 768px) {
+          justify-content: center;
+          width: 100%;
+        }
 
         .btn-toggle-month {
           background: rgba(255, 255, 255, 0.04);
@@ -136,126 +141,14 @@
           }
         }
       }
-
-      .calendar-sync-indicator {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.72rem;
-        color: #8c9cb8;
-
-        .sync-dot {
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-
-          &.online {
-            background: #10b981;
-            box-shadow: 0 0 6px #10b981;
-          }
-
-          &.pulse {
-            background: #f59e0b;
-            box-shadow: 0 0 6px #f59e0b;
-            animation: syncPulse 1.2s infinite;
-          }
-        }
-      }
-    }
-
-    /* Legend Pills Container */
-    .calendar-legend-container {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      align-items: flex-end;
-
-      @media (max-width: 900px) {
-        align-items: flex-start;
-      }
-
-      @media (max-width: 600px) {
-        align-items: center;
-        width: 100%;
-
-        .legend-row {
-          justify-content: center;
-        }
-
-        .legend-debug-toolbar {
-          justify-content: center !important;
-          width: 100%;
-        }
-      }
-
-      .legend-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.35rem;
-      }
-
-      .legend-pill {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 3px 10px;
-        border-radius: 999px;
-        font-family: 'Space Grotesk', 'Manrope', sans-serif;
-        font-size: 0.65rem;
-        font-weight: 800;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        border: 1.5px solid #000000;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
-        user-select: none;
-
-        &.legend-pill-debug {
-          cursor: pointer;
-          transition: all 0.2s ease;
-
-          &:hover {
-            transform: scale(1.08);
-            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
-            filter: brightness(1.15);
-          }
-
-          .debug-tag-icon {
-            font-size: 0.58rem;
-            margin-left: 3px;
-            opacity: 0.75;
-          }
-        }
-      }
-
-      .btn-debug-manage-tags {
-        background: rgba(245, 158, 11, 0.15);
-        border: 1px solid rgba(245, 158, 11, 0.5);
-        color: #fcd34d;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.72rem;
-        font-weight: 700;
-        padding: 3px 10px;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-
-        &:hover {
-          background: #f59e0b;
-          color: #0c0e14;
-          box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
-          transform: translateY(-1px);
-        }
-      }
     }
 
     /* Action Toolbar */
     .calendar-action-toolbar {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.45rem;
       flex-wrap: wrap;
-      width: 100%;
       justify-content: flex-end;
 
       .btn-label-desktop {
@@ -269,6 +162,7 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 6px;
+        width: 100%;
 
         .btn-label-desktop {
           display: none;
@@ -300,10 +194,10 @@
         background: linear-gradient(135deg, #f97316 0%, #dc2626 100%);
         color: #ffffff;
         border: none;
-        padding: 6px 14px;
+        padding: 6px 12px;
         border-radius: 6px;
         font-family: 'JetBrains Mono', monospace;
-        font-size: 0.76rem;
+        font-size: 0.74rem;
         font-weight: 700;
         cursor: pointer;
         display: inline-flex;
@@ -322,15 +216,15 @@
         background: rgba(14, 15, 20, 0.9);
         color: #e7e5e4;
         border: 1px solid rgba(234, 88, 12, 0.4);
-        padding: 8px 14px;
-        border-radius: 8px;
+        padding: 6px 10px;
+        border-radius: 6px;
         font-family: 'JetBrains Mono', monospace;
-        font-size: 0.8rem;
+        font-size: 0.74rem;
         font-weight: 600;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
         transition: all 0.2s ease;
 
         &:hover {
@@ -368,6 +262,75 @@
         }
       }
     }
+
+    /* Legend Pills Container */
+    .calendar-legend-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      align-items: center;
+      width: 100%;
+
+      .legend-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        justify-content: center;
+      }
+
+      .legend-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2.5px 8px;
+        border-radius: 999px;
+        font-family: 'Space Grotesk', 'Manrope', sans-serif;
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        border: 1.5px solid #000000;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+        user-select: none;
+
+        &.legend-pill-debug {
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+            filter: brightness(1.15);
+          }
+
+          .debug-tag-icon {
+            font-size: 0.58rem;
+            margin-left: 3px;
+            opacity: 0.75;
+          }
+        }
+      }
+
+      .btn-debug-manage-tags {
+        background: rgba(245, 158, 11, 0.15);
+        border: 1px solid rgba(245, 158, 11, 0.5);
+        color: #fcd34d;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.70rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #f59e0b;
+          color: #0c0e14;
+          box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+          transform: translateY(-1px);
+        }
+      }
+    }
   }
 
   /* ---------------- 2. CALENDAR MONTH GRID ---------------- */
@@ -382,23 +345,20 @@
     .calendar-weekdays-row {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      background: #fbf7f2;
+      background: #1c1917; // Matching dark grid divider
+      gap: 1px;
       border-bottom: 2px solid #1c1917;
 
       .calendar-weekday-header {
-        padding: 6px 4px;
+        background: #fbf7f2;
+        padding: 7px 2px;
         text-align: center;
         font-family: 'Space Grotesk', sans-serif;
         font-size: 0.74rem;
         font-weight: 800;
         color: #1c1917;
-        letter-spacing: 0.08em;
+        letter-spacing: 0.06em;
         text-transform: uppercase;
-        border-right: 1.5px solid #1c1917;
-
-        &:last-child {
-          border-right: none;
-        }
 
         .weekday-full {
           display: inline;
@@ -410,7 +370,7 @@
 
         @media (max-width: 640px) {
           font-size: 0.65rem;
-          padding: 4px 1px;
+          padding: 5px 1px;
 
           .weekday-full {
             display: none;
@@ -428,12 +388,12 @@
     .calendar-days-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      background: #e7e5e4;
+      background: #1c1917; // Matches the weekday row gap
       gap: 1px; // Crisp thin grid lines
 
       .calendar-cell {
         background: #ffffff;
-        min-height: 72px;
+        min-height: 68px;
         padding: 4px 5px;
         display: flex;
         flex-direction: column;
