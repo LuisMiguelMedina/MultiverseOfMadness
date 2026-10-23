@@ -234,10 +234,6 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
                 </button>
               )}
             </div>
-            <span className="badge-system-pill">
-              <i className="fas fa-scroll me-1" />
-              {camp.CampaignSystem}
-            </span>
           </div>
         </div>
 
@@ -245,7 +241,7 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
         <div className="card-main-body">
           <div className="card-title-group">
             <div className="card-title-meta-bar">
-              <span className="card-world-label">Crónica // Ref: {camp.CampaignID.toUpperCase()}</span>
+              <span className="card-world-label">{camp.CampaignSystem}</span>
               {activeDebug && (
                 <button
                   type="button"
