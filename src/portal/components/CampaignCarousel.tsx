@@ -16,6 +16,26 @@ type CarouselItem =
   | { isAddSlot: false; campaign: CampaignBase }
   | { isAddSlot: true; campaign?: never };
 
+// Priority ranking by campaign status:
+// 1. ACTIVE (Activas)
+// 2. UPCOMING (Próximamente)
+// 3. DEVELOPMENT (En Desarrollo)
+// 4. ARCHIVED (Terminadas / Archivadas)
+const getCampaignStatusPriority = (status?: CampaignStatusType | string | null): number => {
+  switch (status) {
+    case 'ACTIVE':
+      return 1;
+    case 'UPCOMING':
+      return 2;
+    case 'DEVELOPMENT':
+      return 3;
+    case 'ARCHIVED':
+      return 4;
+    default:
+      return 5;
+  }
+};
+
 export const CampaignCarousel: FC<CampaignCarouselProps> = ({
   campaigns,
   isDebug,
@@ -35,9 +55,16 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
     return false;
   }, [isDebug, searchParams]);
 
-  // Build items array: all campaigns + add world slot only in debug mode (?debug=1)
+  // Build items array: campaigns prioritized by status + add world slot only in debug mode (?debug=1)
   const items: CarouselItem[] = useMemo(() => {
-    const list: CarouselItem[] = campaigns.map((c) => ({ isAddSlot: false as const, campaign: c }));
+    const sorted = [...campaigns].sort((a, b) => {
+      const pA = getCampaignStatusPriority(a.CampaignStatus);
+      const pB = getCampaignStatusPriority(b.CampaignStatus);
+      if (pA !== pB) return pA - pB;
+      return a.CampaignTitle.localeCompare(b.CampaignTitle);
+    });
+
+    const list: CarouselItem[] = sorted.map((c) => ({ isAddSlot: false as const, campaign: c }));
     if (activeDebug) {
       list.push({ isAddSlot: true as const });
     }

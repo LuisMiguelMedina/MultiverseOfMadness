@@ -9,6 +9,26 @@ import './CampaignHub.scss';
 const LOCAL_CAMPAIGNS_KEY = 'mom_local_campaigns';
 const OVERRIDES_CAMPAIGNS_KEY = 'mom_campaign_overrides';
 
+// Priority ranking by campaign status:
+// 1. ACTIVE (Activa)
+// 2. UPCOMING (Próximamente)
+// 3. DEVELOPMENT (En Desarrollo)
+// 4. ARCHIVED (Terminada / Archivada)
+const getCampaignStatusPriority = (status?: CampaignStatusType | string | null): number => {
+  switch (status) {
+    case 'ACTIVE':
+      return 1;
+    case 'UPCOMING':
+      return 2;
+    case 'DEVELOPMENT':
+      return 3;
+    case 'ARCHIVED':
+      return 4;
+    default:
+      return 5;
+  }
+};
+
 export const CampaignHub: FC = () => {
   const {
     activeCampaign,
@@ -107,7 +127,11 @@ export const CampaignHub: FC = () => {
     reader.readAsDataURL(file);
   };
 
-  // Consolidate all campaigns starting with active one, plus local ones and overrides applied
+  // Consolidate all campaigns grouped and prioritized by status:
+  // 1. ACTIVE (Activas)
+  // 2. UPCOMING (Próximamente)
+  // 3. DEVELOPMENT (En Desarrollo)
+  // 4. ARCHIVED (Terminadas / Archivadas)
   const allCampaigns = useMemo<CampaignBase[]>(() => {
     const list: CampaignBase[] = [];
     if (activeCampaign) {
@@ -116,9 +140,24 @@ export const CampaignHub: FC = () => {
     list.push(...otherCampaigns);
     list.push(...localExtraCampaigns);
 
-    return list.map((camp) => {
+    const merged = list.map((camp) => {
       const override = campaignOverrides[camp.CampaignID];
       return override ? { ...camp, ...override } : camp;
+    });
+
+    // Deduplicate by CampaignID
+    const uniqueMap = new Map<string, CampaignBase>();
+    merged.forEach((camp) => {
+      uniqueMap.set(camp.CampaignID, camp);
+    });
+
+    return Array.from(uniqueMap.values()).sort((a, b) => {
+      const pA = getCampaignStatusPriority(a.CampaignStatus);
+      const pB = getCampaignStatusPriority(b.CampaignStatus);
+      if (pA !== pB) {
+        return pA - pB;
+      }
+      return a.CampaignTitle.localeCompare(b.CampaignTitle);
     });
   }, [activeCampaign, otherCampaigns, localExtraCampaigns, campaignOverrides]);
 
