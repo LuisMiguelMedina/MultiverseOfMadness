@@ -169,14 +169,13 @@
       max-width: 1440px;
       margin: 0 auto;
       display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      gap: 1rem;
+      text-align: center;
       font-size: 0.78rem;
       color: #78716c;
       font-family: 'Cinzel', Georgia, serif;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.08em;
 
       span {
         color: #a8a29e;

@@ -64,8 +64,7 @@ export const SciFiLayout: FC = () => {
       {/* Medieval Fantasy Global Footer */}
       <footer className="scifi-footer fantasy-footer">
         <div className="footer-bottom">
-          <span>© 2024-2026 PAPUSTANES EN MAZMORRAS // CRÓNICAS Y AVENTURAS DE ROL</span>
-          <span>SALA DE AVENTURAS Y GESTIÓN VTT</span>
+          <span>© 2020-2026 PAPUSTANES EN MAZMORRAS</span>
         </div>
       </footer>
     </div>
