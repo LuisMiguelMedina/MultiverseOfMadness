@@ -121,7 +121,8 @@
           }
 
           input,
-          textarea {
+          textarea,
+          select {
             width: 100%;
             background: rgba(8, 10, 16, 0.9);
             border: 1px solid rgba(217, 119, 6, 0.3);
@@ -136,6 +137,11 @@
               outline: none;
               border-color: #f59e0b;
               box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+            }
+
+            option {
+              background: #111420;
+              color: #ffffff;
             }
           }
         }

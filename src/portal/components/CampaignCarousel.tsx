@@ -1,12 +1,14 @@
-import { FC, useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { FC, useState, useEffect, useCallback, useMemo } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../auth';
 import { CampaignBase, CampaignStatusType } from '../models/Campaigns/CampaignModels';
 import './CampaignCarousel.scss';
 
 export interface CampaignCarouselProps {
   campaigns: CampaignBase[];
+  isDebug?: boolean;
   onAddNewWorld: () => void;
+  onEditCampaign?: (campaign: CampaignBase) => void;
   onSelectCampaign?: (campaign: CampaignBase | null) => void;
 }
 
@@ -16,19 +18,40 @@ type CarouselItem =
 
 export const CampaignCarousel: FC<CampaignCarouselProps> = ({
   campaigns,
+  isDebug,
   onAddNewWorld,
+  onEditCampaign,
   onSelectCampaign,
 }) => {
   const { session } = useAuth();
+  const [searchParams] = useSearchParams();
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
-  // Build items array: all campaigns + add world slot
-  const items: CarouselItem[] = [
-    ...campaigns.map((c) => ({ isAddSlot: false as const, campaign: c })),
-    { isAddSlot: true as const },
-  ];
+  // Active debug mode check: explicit prop or '?debug=1' in query
+  const activeDebug = useMemo(() => {
+    if (isDebug !== undefined) return isDebug;
+    if (searchParams.get('debug') === '1') return true;
+    if (typeof window !== 'undefined' && window.location.search.includes('debug=1')) return true;
+    return false;
+  }, [isDebug, searchParams]);
+
+  // Build items array: all campaigns + add world slot only in debug mode (?debug=1)
+  const items: CarouselItem[] = useMemo(() => {
+    const list: CarouselItem[] = campaigns.map((c) => ({ isAddSlot: false as const, campaign: c }));
+    if (activeDebug) {
+      list.push({ isAddSlot: true as const });
+    }
+    return list;
+  }, [campaigns, activeDebug]);
 
   const total = items.length;
+
+  // Keep index within bounds if items change
+  useEffect(() => {
+    if (currentIndex >= items.length && items.length > 0) {
+      setCurrentIndex(0);
+    }
+  }, [items.length, currentIndex]);
 
   const handlePrev = useCallback(() => {
     setCurrentIndex((prev) => (prev - 1 + total) % total);
@@ -157,7 +180,23 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
 
           {/* Floating Badges */}
           <div className="banner-top-tags">
-            {getStatusBadge(camp.CampaignStatus)}
+            <div className="banner-tags-left">
+              {getStatusBadge(camp.CampaignStatus)}
+              {activeDebug && (
+                <button
+                  type="button"
+                  className="badge-debug-edit-tool"
+                  title="Editar Crónica (Modo ?debug=1)"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEditCampaign?.(camp);
+                  }}
+                >
+                  <i className="fas fa-pen-to-square me-1" />
+                  <span>Editar</span>
+                </button>
+              )}
+            </div>
             <span className="badge-system-pill">
               <i className="fas fa-scroll me-1" />
               {camp.CampaignSystem}
@@ -168,7 +207,23 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
         {/* Card Body */}
         <div className="card-main-body">
           <div className="card-title-group">
-            <span className="card-world-label">Crónica // Ref: {camp.CampaignID.toUpperCase()}</span>
+            <div className="card-title-meta-bar">
+              <span className="card-world-label">Crónica // Ref: {camp.CampaignID.toUpperCase()}</span>
+              {activeDebug && (
+                <button
+                  type="button"
+                  className="btn-card-debug-edit-header"
+                  title="Editar Crónica (Modo ?debug=1)"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEditCampaign?.(camp);
+                  }}
+                >
+                  <i className="fas fa-edit me-1" />
+                  <span>Editar</span>
+                </button>
+              )}
+            </div>
             <h3 className="card-title">{camp.CampaignTitle}</h3>
           </div>
 
@@ -248,6 +303,22 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
               <button type="button" className="btn-card-disabled" disabled>
                 <i className="fas fa-lock me-1" />
                 <span>Mesa Cerrada</span>
+              </button>
+            )}
+
+            {activeDebug && (
+              <button
+                type="button"
+                className="btn-card-debug-action-edit"
+                title="Editar esta campaña (?debug=1)"
+                onClick={(e) => {
+                  if (position !== 'center') e.preventDefault();
+                  e.stopPropagation();
+                  onEditCampaign?.(camp);
+                }}
+              >
+                <i className="fas fa-feather-pointed me-1" />
+                <span>Editar</span>
               </button>
             )}
           </div>

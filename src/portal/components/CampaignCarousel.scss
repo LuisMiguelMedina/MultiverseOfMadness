@@ -217,7 +217,36 @@
           display: flex;
           justify-content: space-between;
           align-items: center;
+          gap: 6px;
           z-index: 2;
+
+          .banner-tags-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+          }
+
+          .badge-debug-edit-tool {
+            background: rgba(245, 158, 11, 0.22);
+            border: 1px solid #f59e0b;
+            color: #fef3c7;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2.5px 7px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.2s ease;
+
+            &:hover {
+              background: #f59e0b;
+              color: #0c0e14;
+              box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+              transform: translateY(-1px);
+            }
+          }
 
           .badge-status {
             font-family: 'JetBrains Mono', monospace;
@@ -280,6 +309,13 @@
         .card-title-group {
           margin-bottom: 0.4rem;
 
+          .card-title-meta-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2px;
+          }
+
           .card-world-label {
             font-family: 'Cinzel', Georgia, serif;
             font-size: 0.65rem;
@@ -287,7 +323,27 @@
             text-transform: uppercase;
             letter-spacing: 0.1em;
             display: block;
-            margin-bottom: 2px;
+          }
+
+          .btn-card-debug-edit-header {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            color: #fcd34d;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.62rem;
+            font-weight: 700;
+            padding: 1.5px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.2s ease;
+
+            &:hover {
+              background: #f59e0b;
+              color: #0c0e14;
+              box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+            }
           }
 
           .card-title {
@@ -403,6 +459,31 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: #78716c;
             cursor: not-allowed;
+          }
+
+          .btn-card-debug-action-edit {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid #f59e0b;
+            color: #fef3c7;
+            font-family: 'Cinzel', Georgia, serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.15);
+
+            &:hover {
+              background: #f59e0b;
+              color: #0c0e14;
+              box-shadow: 0 0 16px rgba(245, 158, 11, 0.55);
+              transform: translateY(-1px);
+            }
           }
         }
 
