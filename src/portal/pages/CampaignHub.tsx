@@ -69,10 +69,6 @@ export const CampaignHub: FC = () => {
         <h1 className="header-main-title">
           Campañas
         </h1>
-        <p className="header-tagline-quote">
-          Los universos más cercanos a nosotros no tienen las mismas historias que contar, pero una
-          verdad tienen todos. Somos y seremos pertenecientes al dictamen del cosmos
-        </p>
       </header>
 
       {errorMessage && (

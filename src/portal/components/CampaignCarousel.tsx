@@ -1,5 +1,6 @@
 import { FC, useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../auth';
 import { CampaignBase, CampaignStatusType } from '../models/Campaigns/CampaignModels';
 import './CampaignCarousel.scss';
 
@@ -18,6 +19,7 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
   onAddNewWorld,
   onSelectCampaign,
 }) => {
+  const { session } = useAuth();
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   // Build items array: all campaigns + add world slot
@@ -124,6 +126,10 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
     }
 
     const camp = item.campaign;
+    const isBttf =
+      camp.CampaignID.toLowerCase() === 'bttf' ||
+      camp.CampaignSlug?.toLowerCase().includes('bttf') ||
+      camp.CampaignTitle.toLowerCase().includes('back to the future');
 
     return (
       <div
@@ -245,6 +251,23 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
               </button>
             )}
           </div>
+
+          {/* Acceso Aventurero integrado dentro de la card de Back To The Future */}
+          {isBttf && (
+            <div className="card-bttf-auth-row">
+              <Link
+                to={session ? '/dashboard' : '/login'}
+                className="btn-card-adventurer"
+                title={session ? `Entrar a la intranet del gremio (${session.username})` : 'Acceso Aventurero'}
+                onClick={(e) => {
+                  if (position !== 'center') e.preventDefault();
+                }}
+              >
+                <i className={session ? 'fas fa-shield-halved me-1' : 'fas fa-dungeon me-1'} />
+                <span>{session ? `Gremio (${session.username})` : 'Acceso Aventurero'}</span>
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     );

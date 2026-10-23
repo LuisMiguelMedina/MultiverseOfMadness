@@ -1,11 +1,8 @@
 import { FC } from 'react';
 import { Link, Outlet } from 'react-router-dom';
-import { useAuth } from '../auth';
 import './SciFiLayout.scss';
 
 export const SciFiLayout: FC = () => {
-  const { session } = useAuth();
-
   return (
     <div className="scifi-portal-shell fantasy-theme">
       {/* Medieval Fantasy Top Navigation Bar */}
@@ -26,18 +23,6 @@ export const SciFiLayout: FC = () => {
               <i className="fas fa-dice-d20 vtt-fantasy-icon" />
               <span>Foundry VTT</span>
             </a>
-
-            {session ? (
-              <Link to="/dashboard" className="btn-intranet-login">
-                <i className="fas fa-shield-halved" />
-                <span>Gremio ({session.username})</span>
-              </Link>
-            ) : (
-              <Link to="/login" className="btn-intranet-login">
-                <i className="fas fa-dungeon" />
-                <span>Acceso Aventurero</span>
-              </Link>
-            )}
           </div>
         </div>
       </header>

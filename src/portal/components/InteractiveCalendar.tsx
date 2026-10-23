@@ -12,8 +12,13 @@ import './InteractiveCalendar.scss';
 type FollowTab = 'FULL' | 'DM' | 'EVENT';
 
 export const InteractiveCalendar: FC = () => {
-  // Calendar displays the current month (defaults to Octubre 2026 as per manual spec)
-  const [currentDate] = useState<Date>(() => new Date(2026, 9, 23));
+  // Navigation strictly restricted to current month (Octubre 2026) and next month (Noviembre 2026)
+  const [monthOffset, setMonthOffset] = useState<0 | 1>(0);
+
+  const displayDate = useMemo(() => {
+    return new Date(2026, 9 + monthOffset, 1);
+  }, [monthOffset]);
+
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [isSyncing, setIsSyncing] = useState<boolean>(true);
   const [syncStatus, setSyncStatus] = useState<string>('Sincronizando con Firebase...');
@@ -63,15 +68,27 @@ export const InteractiveCalendar: FC = () => {
     };
   }, [selectedFollowEventId]);
 
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth(); // 0-indexed: 9 = Octubre
+  const currentYear = displayDate.getFullYear();
+  const currentMonth = displayDate.getMonth(); // 0-indexed: 9 = Octubre, 10 = Noviembre
 
-  // Month name formatting in Spanish (e.g. "Octubre 2026")
+  // Navigation limits: only current month (offset 0) and next month (offset 1)
+  const canGoPrev = monthOffset === 1;
+  const canGoNext = monthOffset === 0;
+
+  const handlePrevMonth = () => {
+    if (canGoPrev) setMonthOffset(0);
+  };
+
+  const handleNextMonth = () => {
+    if (canGoNext) setMonthOffset(1);
+  };
+
+  // Month name formatting in Spanish (e.g. "Octubre 2026", "Noviembre 2026")
   const monthTitle = useMemo(() => {
-    const rawMonth = new Intl.DateTimeFormat('es-MX', { month: 'long' }).format(currentDate);
+    const rawMonth = new Intl.DateTimeFormat('es-MX', { month: 'long' }).format(displayDate);
     const capitalized = rawMonth.charAt(0).toUpperCase() + rawMonth.slice(1);
     return `${capitalized} ${currentYear}`;
-  }, [currentDate, currentYear]);
+  }, [displayDate, currentYear]);
 
   // Compute calendar grid days for current month
   const calendarDays = useMemo(() => {
@@ -343,7 +360,49 @@ export const InteractiveCalendar: FC = () => {
       {/* ---------------- 1. HEADER & LEGEND BAR ---------------- */}
       <div className="calendar-top-section">
         <div className="title-and-sync">
-          <h2 className="calendar-month-heading">{monthTitle}</h2>
+          <div className="month-navigation-wrap">
+            <button
+              type="button"
+              className={`btn-month-nav ${!canGoPrev ? 'disabled' : ''}`}
+              onClick={handlePrevMonth}
+              disabled={!canGoPrev}
+              title={canGoPrev ? 'Volver al mes actual (Octubre 2026)' : 'Límite: este es el mes actual'}
+              aria-label="Mes anterior"
+            >
+              <i className="fas fa-chevron-left" />
+            </button>
+
+            <h2 className="calendar-month-heading">{monthTitle}</h2>
+
+            <button
+              type="button"
+              className={`btn-month-nav ${!canGoNext ? 'disabled' : ''}`}
+              onClick={handleNextMonth}
+              disabled={!canGoNext}
+              title={canGoNext ? 'Ver mes siguiente (Noviembre 2026)' : 'Límite: solo se permite ver el mes siguiente'}
+              aria-label="Mes siguiente"
+            >
+              <i className="fas fa-chevron-right" />
+            </button>
+          </div>
+
+          <div className="month-segmented-toggle">
+            <button
+              type="button"
+              className={`btn-toggle-month ${monthOffset === 0 ? 'active' : ''}`}
+              onClick={() => setMonthOffset(0)}
+            >
+              Octubre 2026 (Actual)
+            </button>
+            <button
+              type="button"
+              className={`btn-toggle-month ${monthOffset === 1 ? 'active' : ''}`}
+              onClick={() => setMonthOffset(1)}
+            >
+              Noviembre 2026 (Siguiente)
+            </button>
+          </div>
+
           <div className="calendar-sync-indicator" title="Estado de conexión con Firebase">
             <span className={`sync-dot ${isSyncing ? 'pulse' : 'online'}`} />
             <span className="sync-text">{syncStatus}</span>
