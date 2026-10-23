@@ -32,7 +32,12 @@ export const SciFiLayout: FC = () => {
       {/* Medieval Fantasy Top Navigation Bar */}
       <header className="scifi-topbar fantasy-topbar">
         <div className="topbar-inner">
-          <Link to="/campaigns" className="brand-mark">
+          <Link to="/campaigns" className="brand-mark" title="Papustanes en Mazmorras">
+            <img
+              src="./favicon.png"
+              alt="Papustanes en Mazmorras"
+              className="brand-torch-emblem"
+            />
             <span className="brand-title-main">PAPUSTANES EN MAZMORRAS</span>
           </Link>
 

@@ -1,35 +1,35 @@
 /* =========================================================
    MEDIEVAL FANTASY PORTAL LAYOUT - Papustanes en Mazmorras
-   Atmospheric dark stone, burnished gold, arcane glow & Cinzel typography
+   Atmospheric dark iron, torchfire flame, ember glow & Cinzel typography
    ========================================================= */
 
 .scifi-portal-shell {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #0c0e14;
+  background-color: #090a0f;
   background-image:
-    radial-gradient(circle at 15% 15%, rgba(217, 119, 6, 0.1) 0%, transparent 45%),
-    radial-gradient(circle at 85% 25%, rgba(139, 92, 246, 0.08) 0%, transparent 45%),
-    radial-gradient(circle at 50% 80%, rgba(245, 158, 11, 0.06) 0%, transparent 50%),
-    linear-gradient(rgba(245, 158, 11, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(245, 158, 11, 0.02) 1px, transparent 1px);
+    radial-gradient(circle at 15% 15%, rgba(234, 88, 12, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 85% 25%, rgba(185, 28, 28, 0.10) 0%, transparent 45%),
+    radial-gradient(circle at 50% 80%, rgba(249, 115, 22, 0.08) 0%, transparent 50%),
+    linear-gradient(rgba(234, 88, 12, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(234, 88, 12, 0.02) 1px, transparent 1px);
   background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px;
-  color: #e2d9c8;
+  color: #e7e5e4;
   font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
   position: relative;
   overflow-x: hidden;
 
-  /* Ambient Burnished Gold Navigation Bar */
+  /* Ambient Burnished Iron & Torchfire Navigation Bar */
   .scifi-topbar {
     position: sticky;
     top: 0;
     z-index: 1000;
     width: 100%;
-    background: rgba(12, 14, 20, 0.94);
+    background: rgba(10, 11, 16, 0.95);
     backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(217, 119, 6, 0.35);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(217, 119, 6, 0.15);
+    border-bottom: 1px solid rgba(234, 88, 12, 0.35);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8), 0 0 22px rgba(234, 88, 12, 0.18);
 
     .topbar-inner {
       max-width: 1440px;
@@ -48,24 +48,37 @@
     .brand-mark {
       display: flex;
       align-items: center;
+      gap: 10px;
       text-decoration: none;
       cursor: pointer;
+
+      .brand-torch-emblem {
+        width: 34px;
+        height: 34px;
+        object-fit: contain;
+        filter: drop-shadow(0 0 8px rgba(234, 88, 12, 0.65));
+        transition: transform 0.25s ease, filter 0.25s ease;
+      }
+
+      &:hover .brand-torch-emblem {
+        transform: scale(1.12) rotate(-3deg);
+        filter: drop-shadow(0 0 14px rgba(234, 88, 12, 0.95)) drop-shadow(0 0 20px rgba(185, 28, 28, 0.5));
+      }
 
       .brand-title-main {
         font-family: 'Cinzel', serif;
         font-size: clamp(1.1rem, 2.2vw, 1.35rem);
         font-weight: 800;
         letter-spacing: 0.08em;
-        color: #fef3c7;
-        background: linear-gradient(135deg, #ffffff 0%, #fef3c7 40%, #f59e0b 100%);
+        background: linear-gradient(135deg, #ffffff 0%, #ffedd5 35%, #f97316 75%, #ea580c 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         line-height: 1.1;
-        text-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+        text-shadow: 0 0 22px rgba(234, 88, 12, 0.45);
         transition: all 0.2s ease;
 
         &:hover {
-          text-shadow: 0 0 28px rgba(245, 158, 11, 0.7);
+          text-shadow: 0 0 30px rgba(234, 88, 12, 0.75), 0 0 50px rgba(185, 28, 28, 0.4);
         }
       }
     }
@@ -79,9 +92,9 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(180, 83, 9, 0.25) 100%);
-        border: 1px solid #f59e0b;
-        color: #fcd34d;
+        background: linear-gradient(135deg, rgba(234, 88, 12, 0.22) 0%, rgba(185, 28, 28, 0.25) 100%);
+        border: 1px solid rgba(249, 115, 22, 0.7);
+        color: #ffedd5;
         font-family: 'JetBrains Mono', monospace;
         font-size: 0.8rem;
         font-weight: 700;
@@ -89,17 +102,19 @@
         border-radius: 6px;
         text-decoration: none;
         transition: all 0.25s ease;
+        box-shadow: 0 0 12px rgba(234, 88, 12, 0.2);
 
         .vtt-fantasy-icon {
           font-size: 0.95rem;
-          color: #f59e0b;
+          color: #f97316;
           transition: transform 0.2s ease;
         }
 
         &:hover {
-          background: rgba(245, 158, 11, 0.35);
+          background: linear-gradient(135deg, rgba(234, 88, 12, 0.38) 0%, rgba(185, 28, 28, 0.45) 100%);
+          border-color: #f97316;
           color: #ffffff;
-          box-shadow: 0 0 18px rgba(245, 158, 11, 0.6);
+          box-shadow: 0 0 20px rgba(234, 88, 12, 0.65);
 
           .vtt-fantasy-icon {
             transform: rotate(35deg);
@@ -112,8 +127,8 @@
         align-items: center;
         gap: 6px;
         background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(217, 119, 6, 0.3);
-        color: #e2d9c8;
+        border: 1px solid rgba(234, 88, 12, 0.3);
+        color: #e7e5e4;
         font-family: 'Space Grotesk', sans-serif;
         font-size: 0.82rem;
         font-weight: 600;
@@ -123,10 +138,10 @@
         transition: all 0.25s ease;
 
         &:hover {
-          border-color: #f59e0b;
-          color: #fcd34d;
-          background: rgba(245, 158, 11, 0.12);
-          box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+          border-color: #f97316;
+          color: #ffedd5;
+          background: rgba(234, 88, 12, 0.15);
+          box-shadow: 0 0 12px rgba(234, 88, 12, 0.35);
         }
       }
     }
@@ -140,8 +155,8 @@
 
   /* Medieval Fantasy Global Footer */
   .scifi-footer {
-    background: #08090e;
-    border-top: 1px solid rgba(217, 119, 6, 0.25);
+    background: #06070a;
+    border-top: 1px solid rgba(234, 88, 12, 0.25);
     padding: 1.25rem 2rem;
     margin-top: 1.5rem;
 
@@ -159,7 +174,7 @@
       align-items: center;
       gap: 1rem;
       font-size: 0.78rem;
-      color: #8c8275;
+      color: #78716c;
       font-family: 'Cinzel', Georgia, serif;
       letter-spacing: 0.05em;
 
