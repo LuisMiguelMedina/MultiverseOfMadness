@@ -302,7 +302,8 @@ export const CampaignHub: FC = () => {
             </div>
 
             <form onSubmit={handleCreateCampaign} className="modal-form-cyber">
-              <div className="form-group mb-3">
+              <div className="modal-body-scrollable">
+                <div className="form-group mb-3">
                 <label>Título de la Campaña / Mundo</label>
                 <input
                   type="text"
@@ -464,6 +465,8 @@ export const CampaignHub: FC = () => {
                 />
               </div>
 
+              </div>
+
               <div className="modal-actions-cyber">
                 <button
                   type="button"
@@ -501,7 +504,8 @@ export const CampaignHub: FC = () => {
             </div>
 
             <form onSubmit={handleSaveEdit} className="modal-form-cyber">
-              <div className="form-group mb-3">
+              <div className="modal-body-scrollable">
+                <div className="form-group mb-3">
                 <label>Título de la Crónica / Campaña</label>
                 <input
                   type="text"
@@ -659,6 +663,8 @@ export const CampaignHub: FC = () => {
                   value={editDesc}
                   onChange={(e) => setEditDesc(e.target.value)}
                 />
+              </div>
+
               </div>
 
               <div className="modal-actions-cyber">
