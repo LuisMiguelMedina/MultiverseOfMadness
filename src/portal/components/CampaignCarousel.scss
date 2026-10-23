@@ -296,7 +296,13 @@
             color: #f59e0b;
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            display: block;
+            display: inline-flex;
+            align-items: center;
+
+            i {
+              color: #f59e0b;
+              font-size: 0.75rem;
+            }
           }
 
           .btn-card-debug-edit-header {
