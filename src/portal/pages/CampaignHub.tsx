@@ -2,7 +2,12 @@ import { FC, useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CampaignCarousel } from '../components/CampaignCarousel';
 import { InteractiveCalendar } from '../components/InteractiveCalendar';
-import { CampaignBase, CampaignStatusType, CampaignDifficultyType } from '../models/Campaigns/CampaignModels';
+import {
+  CampaignBase,
+  CampaignStatusType,
+  CampaignDifficultyType,
+  CampaignCustomButton,
+} from '../models/Campaigns/CampaignModels';
 import { useCampaignHubViewModel } from '../viewModels/useCampaignHubViewModel';
 import './CampaignHub.scss';
 
@@ -78,6 +83,9 @@ export const CampaignHub: FC = () => {
   const [newStartDate, setNewStartDate] = useState<string>('');
   const [newFoundryUrl, setNewFoundryUrl] = useState<string>('');
   const [newCoverUrl, setNewCoverUrl] = useState<string>('');
+  const [newBorderColor, setNewBorderColor] = useState<string>('');
+  const [newButtonColor, setNewButtonColor] = useState<string>('');
+  const [newCustomButtons, setNewCustomButtons] = useState<CampaignCustomButton[]>([]);
 
   // Edit Campaign Modal state
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
@@ -92,6 +100,47 @@ export const CampaignHub: FC = () => {
   const [editCoverUrl, setEditCoverUrl] = useState<string>('');
   const [editFoundryUrl, setEditFoundryUrl] = useState<string>('');
   const [editDesc, setEditDesc] = useState<string>('');
+  const [editBorderColor, setEditBorderColor] = useState<string>('');
+  const [editButtonColor, setEditButtonColor] = useState<string>('');
+  const [editCustomButtons, setEditCustomButtons] = useState<CampaignCustomButton[]>([]);
+
+  // Custom Buttons helpers
+  const handleAddCustomButton = (isEdit: boolean) => {
+    const newBtn: CampaignCustomButton = {
+      id: `btn-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      label: 'Enlace',
+      url: 'https://',
+      color: '',
+    };
+    if (isEdit) {
+      setEditCustomButtons((prev) => [...prev, newBtn]);
+    } else {
+      setNewCustomButtons((prev) => [...prev, newBtn]);
+    }
+  };
+
+  const handleUpdateCustomButton = (
+    id: string,
+    field: keyof CampaignCustomButton,
+    value: string,
+    isEdit: boolean
+  ) => {
+    const updater = (list: CampaignCustomButton[]) =>
+      list.map((btn) => (btn.id === id ? { ...btn, [field]: value } : btn));
+    if (isEdit) {
+      setEditCustomButtons(updater);
+    } else {
+      setNewCustomButtons(updater);
+    }
+  };
+
+  const handleRemoveCustomButton = (id: string, isEdit: boolean) => {
+    if (isEdit) {
+      setEditCustomButtons((prev) => prev.filter((b) => b.id !== id));
+    } else {
+      setNewCustomButtons((prev) => prev.filter((b) => b.id !== id));
+    }
+  };
 
   // Helper to handle image file upload (PNG, JPG, GIF) and convert to base64 DataURL
   const handleImageFileChange = (
@@ -174,6 +223,9 @@ export const CampaignHub: FC = () => {
     setEditCoverUrl(camp.CampaignCoverUrl || '');
     setEditFoundryUrl(camp.CampaignFoundryUrl || '');
     setEditDesc(camp.CampaignDescription);
+    setEditBorderColor(camp.CampaignBorderColor || '');
+    setEditButtonColor(camp.CampaignButtonColor || '');
+    setEditCustomButtons(camp.CampaignCustomButtons ? [...camp.CampaignCustomButtons] : []);
     setShowEditModal(true);
   };
 
@@ -193,6 +245,9 @@ export const CampaignHub: FC = () => {
       CampaignCoverUrl: editCoverUrl.trim() || null,
       CampaignFoundryUrl: editFoundryUrl.trim() || null,
       CampaignDescription: editDesc.trim(),
+      CampaignBorderColor: editBorderColor.trim() || null,
+      CampaignButtonColor: editButtonColor.trim() || null,
+      CampaignCustomButtons: editCustomButtons.filter((b) => b.label.trim() && b.url.trim()),
     };
 
     setCampaignOverrides((prev) => {
@@ -235,6 +290,9 @@ export const CampaignHub: FC = () => {
       CampaignPlayerCount: newPlayerCount === '' ? null : Number(newPlayerCount),
       CampaignSessionCount: 0,
       CampaignDifficulty: newDifficulty,
+      CampaignBorderColor: newBorderColor.trim() || null,
+      CampaignButtonColor: newButtonColor.trim() || null,
+      CampaignCustomButtons: newCustomButtons.filter((b) => b.label.trim() && b.url.trim()),
       CampaignFoundryUrl: newFoundryUrl.trim() || null,
       CampaignWikiHomeSlug: slug,
       CampaignTags: ['Comunidad', 'Nuevo Mundo'],
@@ -259,6 +317,9 @@ export const CampaignHub: FC = () => {
     setNewDifficulty('Intermedio');
     setNewFoundryUrl('');
     setNewCoverUrl('');
+    setNewBorderColor('');
+    setNewButtonColor('');
+    setNewCustomButtons([]);
   };
 
   return (
@@ -504,6 +565,160 @@ export const CampaignHub: FC = () => {
                 />
               </div>
 
+              {/* Personalización de Contorno, Botones y Enlaces */}
+              <div className="custom-styling-section mb-3">
+                <div className="section-title-label">
+                  <i className="fas fa-palette me-2 text-warning" />
+                  Personalización Visual y Botones de Enlace
+                </div>
+
+                <div className="row g-2 mb-3">
+                  <div className="col-md-6 form-group mb-0">
+                    <label>Color del Contorno / Borde</label>
+                    <div className="color-picker-group">
+                      <input
+                        type="color"
+                        className="color-picker-input"
+                        value={newBorderColor || '#f97316'}
+                        onChange={(e) => setNewBorderColor(e.target.value)}
+                        title="Seleccionar color de contorno"
+                      />
+                      <input
+                        type="text"
+                        className="color-text-input"
+                        placeholder="Por defecto (#f97316)"
+                        value={newBorderColor}
+                        onChange={(e) => setNewBorderColor(e.target.value)}
+                      />
+                      {newBorderColor && (
+                        <button
+                          type="button"
+                          className="btn-color-reset"
+                          title="Restablecer color predeterminado"
+                          onClick={() => setNewBorderColor('')}
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="col-md-6 form-group mb-0">
+                    <label>Color de Botones</label>
+                    <div className="color-picker-group">
+                      <input
+                        type="color"
+                        className="color-picker-input"
+                        value={newButtonColor || '#ea580c'}
+                        onChange={(e) => setNewButtonColor(e.target.value)}
+                        title="Seleccionar color de botones"
+                      />
+                      <input
+                        type="text"
+                        className="color-text-input"
+                        placeholder="Por defecto (#ea580c)"
+                        value={newButtonColor}
+                        onChange={(e) => setNewButtonColor(e.target.value)}
+                      />
+                      {newButtonColor && (
+                        <button
+                          type="button"
+                          className="btn-color-reset"
+                          title="Restablecer color predeterminado"
+                          onClick={() => setNewButtonColor('')}
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Subsección de botones personalizados con links */}
+                <div className="custom-buttons-subgroup">
+                  <div className="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                    <label className="mb-0">
+                      <i className="fas fa-link me-1 text-warning" />
+                      Botones Adicionales (Enlaces Web)
+                    </label>
+                    <button
+                      type="button"
+                      className="btn-add-custom-link"
+                      onClick={() => handleAddCustomButton(false)}
+                    >
+                      <i className="fas fa-plus me-1" />
+                      Añadir Botón
+                    </button>
+                  </div>
+
+                  {newCustomButtons.length === 0 ? (
+                    <div className="custom-buttons-empty">
+                      Sin botones de enlace adicionales. Haz clic en "+ Añadir Botón" para agregar botones personalizados.
+                    </div>
+                  ) : (
+                    <div className="custom-buttons-list">
+                      {newCustomButtons.map((btn, index) => (
+                        <div key={btn.id} className="custom-btn-item-row">
+                          <div className="btn-row-fields">
+                            <div className="field-label-group">
+                              <span className="field-num">#{index + 1}</span>
+                              <input
+                                type="text"
+                                placeholder="Texto (ej. Discord, VTT)"
+                                value={btn.label}
+                                onChange={(e) =>
+                                  handleUpdateCustomButton(btn.id, 'label', e.target.value, false)
+                                }
+                                className="input-btn-label"
+                              />
+                            </div>
+
+                            <input
+                              type="url"
+                              placeholder="Enlace URL (https://...)"
+                              value={btn.url}
+                              onChange={(e) =>
+                                handleUpdateCustomButton(btn.id, 'url', e.target.value, false)
+                              }
+                              className="input-btn-url"
+                            />
+
+                            <div className="color-field-inline" title="Color específico para este botón">
+                              <input
+                                type="color"
+                                className="color-picker-input-small"
+                                value={btn.color || newButtonColor || '#ea580c'}
+                                onChange={(e) =>
+                                  handleUpdateCustomButton(btn.id, 'color', e.target.value, false)
+                                }
+                              />
+                              <input
+                                type="text"
+                                placeholder="Color"
+                                value={btn.color || ''}
+                                onChange={(e) =>
+                                  handleUpdateCustomButton(btn.id, 'color', e.target.value, false)
+                                }
+                                className="input-btn-color-text"
+                              />
+                            </div>
+
+                            <button
+                              type="button"
+                              className="btn-remove-custom-item"
+                              title="Eliminar este botón"
+                              onClick={() => handleRemoveCustomButton(btn.id, false)}
+                            >
+                              <i className="fas fa-trash-can" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
               </div>
 
               <div className="modal-actions-cyber">
@@ -702,6 +917,160 @@ export const CampaignHub: FC = () => {
                   value={editDesc}
                   onChange={(e) => setEditDesc(e.target.value)}
                 />
+              </div>
+
+              {/* Personalización de Contorno, Botones y Enlaces */}
+              <div className="custom-styling-section mb-3">
+                <div className="section-title-label">
+                  <i className="fas fa-palette me-2 text-warning" />
+                  Personalización Visual y Botones de Enlace
+                </div>
+
+                <div className="row g-2 mb-3">
+                  <div className="col-md-6 form-group mb-0">
+                    <label>Color del Contorno / Borde</label>
+                    <div className="color-picker-group">
+                      <input
+                        type="color"
+                        className="color-picker-input"
+                        value={editBorderColor || '#f97316'}
+                        onChange={(e) => setEditBorderColor(e.target.value)}
+                        title="Seleccionar color de contorno"
+                      />
+                      <input
+                        type="text"
+                        className="color-text-input"
+                        placeholder="Por defecto (#f97316)"
+                        value={editBorderColor}
+                        onChange={(e) => setEditBorderColor(e.target.value)}
+                      />
+                      {editBorderColor && (
+                        <button
+                          type="button"
+                          className="btn-color-reset"
+                          title="Restablecer color predeterminado"
+                          onClick={() => setEditBorderColor('')}
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="col-md-6 form-group mb-0">
+                    <label>Color de Botones</label>
+                    <div className="color-picker-group">
+                      <input
+                        type="color"
+                        className="color-picker-input"
+                        value={editButtonColor || '#ea580c'}
+                        onChange={(e) => setEditButtonColor(e.target.value)}
+                        title="Seleccionar color de botones"
+                      />
+                      <input
+                        type="text"
+                        className="color-text-input"
+                        placeholder="Por defecto (#ea580c)"
+                        value={editButtonColor}
+                        onChange={(e) => setEditButtonColor(e.target.value)}
+                      />
+                      {editButtonColor && (
+                        <button
+                          type="button"
+                          className="btn-color-reset"
+                          title="Restablecer color predeterminado"
+                          onClick={() => setEditButtonColor('')}
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Subsección de botones personalizados con links */}
+                <div className="custom-buttons-subgroup">
+                  <div className="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                    <label className="mb-0">
+                      <i className="fas fa-link me-1 text-warning" />
+                      Botones Adicionales (Enlaces Web)
+                    </label>
+                    <button
+                      type="button"
+                      className="btn-add-custom-link"
+                      onClick={() => handleAddCustomButton(true)}
+                    >
+                      <i className="fas fa-plus me-1" />
+                      Añadir Botón
+                    </button>
+                  </div>
+
+                  {editCustomButtons.length === 0 ? (
+                    <div className="custom-buttons-empty">
+                      Sin botones de enlace adicionales. Haz clic en "+ Añadir Botón" para agregar botones personalizados.
+                    </div>
+                  ) : (
+                    <div className="custom-buttons-list">
+                      {editCustomButtons.map((btn, index) => (
+                        <div key={btn.id} className="custom-btn-item-row">
+                          <div className="btn-row-fields">
+                            <div className="field-label-group">
+                              <span className="field-num">#{index + 1}</span>
+                              <input
+                                type="text"
+                                placeholder="Texto (ej. Discord, VTT)"
+                                value={btn.label}
+                                onChange={(e) =>
+                                  handleUpdateCustomButton(btn.id, 'label', e.target.value, true)
+                                }
+                                className="input-btn-label"
+                              />
+                            </div>
+
+                            <input
+                              type="url"
+                              placeholder="Enlace URL (https://...)"
+                              value={btn.url}
+                              onChange={(e) =>
+                                handleUpdateCustomButton(btn.id, 'url', e.target.value, true)
+                              }
+                              className="input-btn-url"
+                            />
+
+                            <div className="color-field-inline" title="Color específico para este botón">
+                              <input
+                                type="color"
+                                className="color-picker-input-small"
+                                value={btn.color || editButtonColor || '#ea580c'}
+                                onChange={(e) =>
+                                  handleUpdateCustomButton(btn.id, 'color', e.target.value, true)
+                                }
+                              />
+                              <input
+                                type="text"
+                                placeholder="Color"
+                                value={btn.color || ''}
+                                onChange={(e) =>
+                                  handleUpdateCustomButton(btn.id, 'color', e.target.value, true)
+                                }
+                                className="input-btn-color-text"
+                              />
+                            </div>
+
+                            <button
+                              type="button"
+                              className="btn-remove-custom-item"
+                              title="Eliminar este botón"
+                              onClick={() => handleRemoveCustomButton(btn.id, true)}
+                            >
+                              <i className="fas fa-trash-can" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               </div>

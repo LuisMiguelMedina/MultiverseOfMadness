@@ -6,6 +6,13 @@
 export type CampaignStatusType = 'ACTIVE' | 'UPCOMING' | 'ARCHIVED' | 'DEVELOPMENT';
 export type CampaignDifficultyType = 'Begginer friendly' | 'Intermedio' | 'Difícil' | 'Hardcore';
 
+export interface CampaignCustomButton {
+  id: string;
+  label: string;
+  url: string;
+  color?: string | null;
+}
+
 export interface CampaignBase {
   CampaignID: string;
   CampaignTitle: string;
@@ -20,6 +27,9 @@ export interface CampaignBase {
   CampaignPlayerCount: number | null;
   CampaignSessionCount: number | null;
   CampaignDifficulty?: CampaignDifficultyType | string | null;
+  CampaignBorderColor?: string | null;
+  CampaignButtonColor?: string | null;
+  CampaignCustomButtons?: CampaignCustomButton[];
   CampaignFoundryUrl: string | null;
   CampaignWikiHomeSlug: string | null;
   CampaignTags: string[];

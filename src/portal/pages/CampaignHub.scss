@@ -268,6 +268,209 @@
               }
             }
           }
+          .custom-styling-section {
+            background: rgba(14, 17, 26, 0.75);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 1rem;
+
+            .section-title-label {
+              font-family: 'Cinzel', Georgia, serif;
+              font-size: 0.8rem;
+              font-weight: 700;
+              color: #fcd34d;
+              text-transform: uppercase;
+              letter-spacing: 0.08em;
+              margin-bottom: 0.75rem;
+              display: flex;
+              align-items: center;
+            }
+
+            .color-picker-group {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+
+              .color-picker-input {
+                width: 38px;
+                height: 36px;
+                padding: 0;
+                border: 1px solid rgba(245, 158, 11, 0.4);
+                border-radius: 6px;
+                background: transparent;
+                cursor: pointer;
+                flex-shrink: 0;
+
+                &::-webkit-color-swatch-wrapper {
+                  padding: 2px;
+                }
+                &::-webkit-color-swatch {
+                  border-radius: 4px;
+                  border: none;
+                }
+              }
+
+              .color-text-input {
+                flex: 1;
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 0.82rem;
+              }
+
+              .btn-color-reset {
+                background: rgba(239, 68, 68, 0.15);
+                border: 1px solid rgba(239, 68, 68, 0.4);
+                color: #fca5a5;
+                width: 32px;
+                height: 36px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: all 0.2s;
+                flex-shrink: 0;
+
+                &:hover {
+                  background: rgba(239, 68, 68, 0.35);
+                  color: #ffffff;
+                }
+              }
+            }
+
+            .custom-buttons-subgroup {
+              border-top: 1px solid rgba(245, 158, 11, 0.15);
+              padding-top: 0.75rem;
+
+              .btn-add-custom-link {
+                background: rgba(245, 158, 11, 0.15);
+                border: 1px solid rgba(245, 158, 11, 0.5);
+                color: #fcd34d;
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 0.74rem;
+                padding: 4px 10px;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+
+                &:hover {
+                  background: #f59e0b;
+                  color: #0c0e14;
+                  box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+                }
+              }
+
+              .custom-buttons-empty {
+                font-size: 0.76rem;
+                color: #78716c;
+                font-style: italic;
+                padding: 6px 4px;
+              }
+
+              .custom-buttons-list {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+
+                .custom-btn-item-row {
+                  background: rgba(8, 10, 16, 0.85);
+                  border: 1px solid rgba(245, 158, 11, 0.2);
+                  border-radius: 6px;
+                  padding: 8px;
+
+                  .btn-row-fields {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    flex-wrap: wrap;
+
+                    @media (min-width: 576px) {
+                      flex-wrap: nowrap;
+                    }
+
+                    .field-label-group {
+                      display: flex;
+                      align-items: center;
+                      gap: 4px;
+                      flex: 1 1 120px;
+
+                      .field-num {
+                        font-family: 'JetBrains Mono', monospace;
+                        font-size: 0.7rem;
+                        color: #f59e0b;
+                        font-weight: 700;
+                      }
+
+                      .input-btn-label {
+                        width: 100%;
+                        font-size: 0.82rem;
+                        padding: 5px 8px;
+                      }
+                    }
+
+                    .input-btn-url {
+                      flex: 2 1 180px;
+                      font-family: 'JetBrains Mono', monospace;
+                      font-size: 0.8rem;
+                      padding: 5px 8px;
+                    }
+
+                    .color-field-inline {
+                      display: flex;
+                      align-items: center;
+                      gap: 4px;
+                      flex: 0 0 auto;
+
+                      .color-picker-input-small {
+                        width: 32px;
+                        height: 32px;
+                        padding: 0;
+                        border: 1px solid rgba(245, 158, 11, 0.4);
+                        border-radius: 4px;
+                        background: transparent;
+                        cursor: pointer;
+
+                        &::-webkit-color-swatch-wrapper {
+                          padding: 1px;
+                        }
+                        &::-webkit-color-swatch {
+                          border-radius: 3px;
+                          border: none;
+                        }
+                      }
+
+                      .input-btn-color-text {
+                        width: 70px;
+                        font-family: 'JetBrains Mono', monospace;
+                        font-size: 0.74rem;
+                        padding: 5px 4px;
+                      }
+                    }
+
+                    .btn-remove-custom-item {
+                      background: rgba(239, 68, 68, 0.15);
+                      border: 1px solid rgba(239, 68, 68, 0.4);
+                      color: #fca5a5;
+                      width: 32px;
+                      height: 32px;
+                      border-radius: 4px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      cursor: pointer;
+                      transition: all 0.2s;
+                      flex-shrink: 0;
+
+                      &:hover {
+                        background: rgba(239, 68, 68, 0.35);
+                        color: #ffffff;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
 
         .modal-actions-cyber {

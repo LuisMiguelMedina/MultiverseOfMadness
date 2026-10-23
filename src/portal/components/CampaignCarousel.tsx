@@ -191,10 +191,28 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
       camp.CampaignSlug?.toLowerCase().includes('bttf') ||
       camp.CampaignTitle.toLowerCase().includes('back to the future');
 
+    // Dynamic style for custom card border & glow
+    const cardDynamicStyle: React.CSSProperties = {};
+    if (camp.CampaignBorderColor) {
+      cardDynamicStyle.borderColor = camp.CampaignBorderColor;
+      if (position === 'center') {
+        cardDynamicStyle.boxShadow = `0 16px 45px rgba(0, 0, 0, 0.9), 0 0 30px ${camp.CampaignBorderColor}66, 0 0 10px ${camp.CampaignBorderColor}44`;
+      }
+    }
+
+    // Dynamic style for primary card button
+    const wikiDynamicStyle: React.CSSProperties = {};
+    if (camp.CampaignButtonColor) {
+      wikiDynamicStyle.background = `linear-gradient(135deg, ${camp.CampaignButtonColor} 0%, rgba(15, 20, 30, 0.85) 120%)`;
+      wikiDynamicStyle.borderColor = camp.CampaignButtonColor;
+      wikiDynamicStyle.boxShadow = `0 0 14px ${camp.CampaignButtonColor}60`;
+    }
+
     return (
       <div
         key={camp.CampaignID}
         className={`carousel-card world-card card-pos-${position}`}
+        style={cardDynamicStyle}
         onClick={() => {
           if (position !== 'center') {
             setCurrentIndex(idx);
@@ -310,6 +328,7 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
                 camp.CampaignWikiHomeSlug ? `/${camp.CampaignWikiHomeSlug}` : ''
               }`}
               className="btn-card-wiki"
+              style={wikiDynamicStyle}
               onClick={(e) => {
                 if (position !== 'center') e.preventDefault();
               }}
@@ -317,6 +336,38 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
               <i className="fas fa-book-open me-1" />
               <span>Wiki</span>
             </Link>
+
+            {camp.CampaignCustomButtons &&
+              camp.CampaignCustomButtons.map((btn) => {
+                const btnColor = btn.color || camp.CampaignButtonColor;
+                const customBtnStyle: React.CSSProperties = btnColor
+                  ? {
+                      background: `linear-gradient(135deg, ${btnColor} 0%, rgba(15, 18, 25, 0.85) 130%)`,
+                      borderColor: btnColor,
+                      boxShadow: `0 0 12px ${btnColor}45`,
+                      color: '#ffffff',
+                    }
+                  : {};
+
+                return (
+                  <a
+                    key={btn.id}
+                    href={btn.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-card-custom-link"
+                    style={customBtnStyle}
+                    title={btn.label}
+                    onClick={(e) => {
+                      if (position !== 'center') e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    <i className="fas fa-arrow-up-right-from-square me-1" />
+                    <span className="btn-label-text">{btn.label}</span>
+                  </a>
+                );
+              })}
 
             {activeDebug && (
               <button

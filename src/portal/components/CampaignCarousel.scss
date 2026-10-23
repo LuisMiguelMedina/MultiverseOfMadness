@@ -67,7 +67,9 @@
     .carousel-track {
       position: relative;
       width: 100%;
-      height: 460px;
+      min-height: 460px;
+      height: auto;
+      padding: 10px 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -79,7 +81,9 @@
   .carousel-card {
     width: 360px;
     max-width: calc(100vw - 100px);
-    height: 440px;
+    min-height: 440px;
+    height: auto;
+    max-height: 520px;
     background: linear-gradient(
       145deg,
       rgba(20, 24, 36, 0.97) 0%,
@@ -95,7 +99,8 @@
 
     @media (max-width: 600px) {
       max-width: calc(100vw - 80px);
-      height: 420px;
+      min-height: 420px;
+      height: auto;
     }
 
     /* Center Card: fully active & elevated */
@@ -121,6 +126,7 @@
     &.card-pos-prev {
       position: absolute;
       left: calc(50% - 280px);
+      height: 440px;
       transform: translateX(-50%) scale(0.84);
       z-index: 2;
       opacity: 0.45;
@@ -142,6 +148,7 @@
     &.card-pos-next {
       position: absolute;
       right: calc(50% - 280px);
+      height: 440px;
       transform: translateX(50%) scale(0.84);
       z-index: 2;
       opacity: 0.45;
@@ -409,19 +416,21 @@
         /* Action Buttons */
         .card-actions-row {
           display: flex;
-          gap: 8px;
+          flex-wrap: wrap;
+          gap: 6px;
           margin-top: 0.5rem;
           padding-top: 0.55rem;
           border-top: 1px solid rgba(245, 158, 11, 0.15);
 
           a,
           button {
-            flex: 1;
+            flex: 1 1 calc(50% - 6px);
+            min-width: 90px;
             padding: 6px 10px;
             height: 35px;
             border-radius: 6px;
             font-family: 'Cinzel', Georgia, serif;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 700;
             display: flex;
             align-items: center;
@@ -429,6 +438,14 @@
             text-decoration: none;
             cursor: pointer;
             transition: all 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+
+            .btn-label-text {
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
           }
 
           .btn-card-wiki {
@@ -442,6 +459,21 @@
               background: linear-gradient(135deg, #fb923c 0%, #ef4444 100%);
               border-color: #f97316;
               box-shadow: 0 0 20px rgba(234, 88, 12, 0.75), 0 0 30px rgba(185, 28, 28, 0.4);
+              color: #ffffff;
+              transform: translateY(-1px);
+            }
+          }
+
+          .btn-card-custom-link {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.6);
+            color: #ffedd5;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+
+            &:hover {
+              filter: brightness(1.2);
+              box-shadow: 0 0 18px rgba(245, 158, 11, 0.5);
               color: #ffffff;
               transform: translateY(-1px);
             }
