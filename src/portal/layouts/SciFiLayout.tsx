@@ -1,10 +1,11 @@
 import { FC } from 'react';
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import { useAuth } from '../auth';
 import './SciFiLayout.scss';
 
 export const SciFiLayout: FC = () => {
   const { session } = useAuth();
+  const faviconUrl = `${import.meta.env.BASE_URL}favicon.png`;
 
   return (
     <div className="scifi-portal-shell">
@@ -14,28 +15,13 @@ export const SciFiLayout: FC = () => {
           <Link to="/campaigns" className="brand-mark">
             <div className="brand-crest">
               <div className="crest-inner">
-                <i className="fas fa-cubes" />
+                <img src={faviconUrl} alt="Multiverse of Madness" className="brand-crest-icon" />
               </div>
             </div>
             <div className="brand-titles">
               <span className="brand-title-main">MULTIVERSE OF MADNESS</span>
-              <span className="brand-subtitle-tag">Lore & Campaign Archive</span>
             </div>
           </Link>
-
-          <nav aria-label="Navegación principal">
-            <ul className="nav-links">
-              <li>
-                <NavLink
-                  to="/campaigns"
-                  className={({ isActive }) => (isActive ? 'active' : '')}
-                >
-                  <i className="fas fa-globe-americas" />
-                  <span>Campañas & Universos</span>
-                </NavLink>
-              </li>
-            </ul>
-          </nav>
 
           <div className="topbar-actions">
             <a
