@@ -99,13 +99,13 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
         >
           <div className="add-slot-content">
             <div className="add-icon-halo">
-              <i className="fas fa-plus" />
+              <i className="fas fa-scroll" />
             </div>
-            <span className="slot-badge">VTT Modular Slot</span>
-            <h3 className="slot-title">Registrar Nuevo Mundo</h3>
+            <span className="slot-badge">Códice de Campañas</span>
+            <h3 className="slot-title">Crear Nueva Crónica</h3>
             <p className="slot-desc">
-              Añade una nueva campaña con su propia ficha descriptiva, Game Master, enlace a Foundry VTT
-              y wiki de lore independiente.
+              Añade un nuevo reino o campaña con su ambientación, Game Master, enlace a Foundry VTT y
+              enciclopedia de lore.
             </p>
             <button
               type="button"
@@ -115,8 +115,8 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
                 onAddNewWorld();
               }}
             >
-              <i className="fas fa-cube me-1" />
-              + Crear Campaña
+              <i className="fas fa-feather-pointed me-1" />
+              + Nueva Crónica
             </button>
           </div>
         </div>
@@ -153,7 +153,7 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
           <div className="banner-top-tags">
             {getStatusBadge(camp.CampaignStatus)}
             <span className="badge-system-pill">
-              <i className="fas fa-microchip me-1" />
+              <i className="fas fa-scroll me-1" />
               {camp.CampaignSystem}
             </span>
           </div>
@@ -162,7 +162,7 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
         {/* Card Body */}
         <div className="card-main-body">
           <div className="card-title-group">
-            <span className="card-world-label">Mundo VTT // Ref: {camp.CampaignID.toUpperCase()}</span>
+            <span className="card-world-label">Crónica // Ref: {camp.CampaignID.toUpperCase()}</span>
             <h3 className="card-title">{camp.CampaignTitle}</h3>
           </div>
 
@@ -190,11 +190,11 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
 
             <div className="hud-cell">
               <span className="hud-label">
-                <i className="fas fa-users me-1" />
-                Agentes
+                <i className="fas fa-shield-halved me-1" />
+                Aventureros
               </span>
               <span className="hud-value">
-                {camp.CampaignPlayerCount !== null ? `${camp.CampaignPlayerCount} Jugadores` : 'TBD'}
+                {camp.CampaignPlayerCount !== null ? `${camp.CampaignPlayerCount} Héroes` : 'TBD'}
               </span>
             </div>
 
@@ -220,8 +220,8 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
                 if (position !== 'center') e.preventDefault();
               }}
             >
-              <i className="fas fa-book-journal-whills me-1" />
-              <span>Explorar Wiki</span>
+              <i className="fas fa-book-open me-1" />
+              <span>Explorar Crónica</span>
             </Link>
 
             {camp.CampaignFoundryUrl ? (
@@ -230,18 +230,18 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
                 target="_blank"
                 rel="noreferrer"
                 className="btn-card-foundry"
-                title="Lanzar servidor Foundry VTT"
+                title="Entrar a la mesa virtual Foundry VTT"
                 onClick={(e) => {
                   if (position !== 'center') e.preventDefault();
                 }}
               >
-                <i className="fas fa-play me-1" />
-                <span>Foundry VTT</span>
+                <i className="fas fa-dice-d20 me-1" />
+                <span>Mesa VTT</span>
               </a>
             ) : (
               <button type="button" className="btn-card-disabled" disabled>
                 <i className="fas fa-lock me-1" />
-                <span>VTT Offline</span>
+                <span>Mesa Cerrada</span>
               </button>
             )}
           </div>

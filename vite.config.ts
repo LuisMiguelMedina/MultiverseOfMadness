@@ -5,9 +5,9 @@ import react from '@vitejs/plugin-react';
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
-// GitHub Pages project site: https://<user>.github.io/MultiverseOfMadness/
+// GitHub Pages project site: https://<user>.github.io/PapustanesEnMazmorras/
 const base =
-  process.env.GITHUB_PAGES === 'true' ? '/MultiverseOfMadness/' : '/';
+  process.env.GITHUB_PAGES === 'true' ? '/PapustanesEnMazmorras/' : '/';
 
 export default defineConfig({
   plugins: [react()],

@@ -295,9 +295,9 @@ export const InteractiveCalendar: FC = () => {
   const handleDownloadFullIcs = () => {
     const icsContent = CalendarDataAccess.GenerateIcsCalendar(
       events,
-      'Multiverse of Madness - Calendario Completo',
+      'Papustanes en Mazmorras - Calendario Completo',
     );
-    downloadBlob(icsContent, `multiverse-completo-${currentYear}-${currentMonth + 1}.ics`);
+    downloadBlob(icsContent, `papustanes-calendario-completo-${currentYear}-${currentMonth + 1}.ics`);
   };
 
   // Download DM specific .ICS
@@ -305,19 +305,19 @@ export const InteractiveCalendar: FC = () => {
     const dmEvents = events.filter((e) => e.authorTag.toUpperCase() === dm.toUpperCase());
     const icsContent = CalendarDataAccess.GenerateIcsCalendar(
       dmEvents,
-      `Multiverse of Madness - Partidas de ${dm}`,
+      `Papustanes en Mazmorras - Partidas de ${dm}`,
     );
-    downloadBlob(icsContent, `multiverse-dm-${dm.toLowerCase()}-${currentYear}-${currentMonth + 1}.ics`);
+    downloadBlob(icsContent, `papustanes-dm-${dm.toLowerCase()}-${currentYear}-${currentMonth + 1}.ics`);
   };
 
   // Download Single Event .ICS
   const handleDownloadSingleEventIcs = (event: CalendarEvent) => {
     const icsContent = CalendarDataAccess.GenerateIcsCalendar(
       [event],
-      `Multiverse of Madness - ${event.title}`,
+      `Papustanes en Mazmorras - ${event.title}`,
     );
     const safeTitle = event.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    downloadBlob(icsContent, `multiverse-evento-${safeTitle}.ics`);
+    downloadBlob(icsContent, `papustanes-evento-${safeTitle}.ics`);
   };
 
   // Open follow modal with specific tab
@@ -745,7 +745,7 @@ export const InteractiveCalendar: FC = () => {
               {followTab === 'FULL' && (
                 <div className="tab-content-panel">
                   <p className="follow-intro">
-                    Sincroniza <strong>todas las campañas y eventos del multiverso ({events.length} crónicas)</strong> en
+                    Sincroniza <strong>todas las campañas y eventos de Papustanes en Mazmorras ({events.length} crónicas)</strong> en
                     tu Google Calendar personal.
                   </p>
 

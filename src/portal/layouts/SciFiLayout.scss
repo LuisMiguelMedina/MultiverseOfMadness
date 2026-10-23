@@ -1,35 +1,35 @@
 /* =========================================================
-   SCIFI PORTAL LAYOUT - Modern Fandom & Foundry VTT Theme
-   Inspired by high-end gaming wikis and modern web composition
+   MEDIEVAL FANTASY PORTAL LAYOUT - Papustanes en Mazmorras
+   Atmospheric dark stone, burnished gold, arcane glow & Cinzel typography
    ========================================================= */
 
 .scifi-portal-shell {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #06070d;
+  background-color: #0c0e14;
   background-image:
-    radial-gradient(circle at 15% 15%, rgba(0, 204, 255, 0.08) 0%, transparent 45%),
-    radial-gradient(circle at 85% 25%, rgba(138, 43, 226, 0.08) 0%, transparent 45%),
-    radial-gradient(circle at 50% 80%, rgba(0, 102, 255, 0.05) 0%, transparent 50%),
-    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 40px 40px, 40px 40px;
-  color: #dbe2f4;
+    radial-gradient(circle at 15% 15%, rgba(217, 119, 6, 0.1) 0%, transparent 45%),
+    radial-gradient(circle at 85% 25%, rgba(139, 92, 246, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 50% 80%, rgba(245, 158, 11, 0.06) 0%, transparent 50%),
+    linear-gradient(rgba(245, 158, 11, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 158, 11, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px;
+  color: #e2d9c8;
   font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
   position: relative;
   overflow-x: hidden;
 
-  /* Ambient Cyber Glow Header */
+  /* Ambient Burnished Gold Navigation Bar */
   .scifi-topbar {
     position: sticky;
     top: 0;
     z-index: 1000;
     width: 100%;
-    background: rgba(8, 10, 18, 0.88);
+    background: rgba(12, 14, 20, 0.94);
     backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
+    border-bottom: 1px solid rgba(217, 119, 6, 0.35);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(217, 119, 6, 0.15);
 
     .topbar-inner {
       max-width: 1440px;
@@ -52,74 +52,20 @@
       cursor: pointer;
 
       .brand-title-main {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 1.15rem;
-        font-weight: 700;
-        letter-spacing: 0.05em;
-        color: #ffffff;
+        font-family: 'Cinzel', serif;
+        font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        color: #fef3c7;
+        background: linear-gradient(135deg, #ffffff 0%, #fef3c7 40%, #f59e0b 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         line-height: 1.1;
-        text-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
-        transition: color 0.2s ease, text-shadow 0.2s ease;
+        text-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+        transition: all 0.2s ease;
 
         &:hover {
-          color: #00ffff;
-          text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
-        }
-      }
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-
-      @media (max-width: 991px) {
-        display: none;
-      }
-
-      li {
-        a {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 8px 14px;
-          border-radius: 6px;
-          color: #a0adc8;
-          font-family: 'Space Grotesk', sans-serif;
-          font-size: 0.88rem;
-          font-weight: 600;
-          text-decoration: none;
-          transition: all 0.25s ease;
-
-          i {
-            font-size: 0.85rem;
-            color: #00cccc;
-            transition: color 0.25s ease;
-          }
-
-          &:hover {
-            color: #ffffff;
-            background: rgba(0, 255, 255, 0.08);
-
-            i {
-              color: #00ffff;
-              text-shadow: 0 0 8px #00ffff;
-            }
-          }
-
-          &.active {
-            color: #00ffff;
-            background: rgba(0, 255, 255, 0.14);
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            box-shadow: 0 0 12px rgba(0, 255, 255, 0.2);
-
-            i {
-              color: #00ffff;
-            }
-          }
+          text-shadow: 0 0 28px rgba(245, 158, 11, 0.7);
         }
       }
     }
@@ -133,9 +79,9 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: linear-gradient(135deg, rgba(255, 170, 0, 0.2) 0%, rgba(255, 102, 0, 0.2) 100%);
-        border: 1px solid #ffaa00;
-        color: #ffaa00;
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(180, 83, 9, 0.25) 100%);
+        border: 1px solid #f59e0b;
+        color: #fcd34d;
         font-family: 'JetBrains Mono', monospace;
         font-size: 0.8rem;
         font-weight: 700;
@@ -144,19 +90,20 @@
         text-decoration: none;
         transition: all 0.25s ease;
 
-        .vtt-dot {
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-          background: #00ff88;
-          box-shadow: 0 0 8px #00ff88;
-          animation: pulseDot 2s infinite;
+        .vtt-fantasy-icon {
+          font-size: 0.95rem;
+          color: #f59e0b;
+          transition: transform 0.2s ease;
         }
 
         &:hover {
-          background: rgba(255, 170, 0, 0.35);
+          background: rgba(245, 158, 11, 0.35);
           color: #ffffff;
-          box-shadow: 0 0 15px rgba(255, 170, 0, 0.5);
+          box-shadow: 0 0 18px rgba(245, 158, 11, 0.6);
+
+          .vtt-fantasy-icon {
+            transform: rotate(35deg);
+          }
         }
       }
 
@@ -164,9 +111,9 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        color: #d0d8f0;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(217, 119, 6, 0.3);
+        color: #e2d9c8;
         font-family: 'Space Grotesk', sans-serif;
         font-size: 0.82rem;
         font-weight: 600;
@@ -176,9 +123,10 @@
         transition: all 0.25s ease;
 
         &:hover {
-          border-color: #00ffff;
-          color: #00ffff;
-          background: rgba(0, 255, 255, 0.1);
+          border-color: #f59e0b;
+          color: #fcd34d;
+          background: rgba(245, 158, 11, 0.12);
+          box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
         }
       }
     }
@@ -190,12 +138,12 @@
     flex-direction: column;
   }
 
-  /* Sci-Fi Global Footer */
+  /* Medieval Fantasy Global Footer */
   .scifi-footer {
-    background: #040509;
-    border-top: 1px solid rgba(0, 255, 255, 0.12);
+    background: #08090e;
+    border-top: 1px solid rgba(217, 119, 6, 0.25);
     padding: 1.5rem 2rem;
-    margin-top: 3rem;
+    margin-top: 3.5rem;
 
     .footer-bottom {
       max-width: 1440px;
@@ -206,32 +154,13 @@
       align-items: center;
       gap: 1rem;
       font-size: 0.78rem;
-      color: #556080;
-      font-family: 'JetBrains Mono', monospace;
+      color: #8c8275;
+      font-family: 'Cinzel', Georgia, serif;
+      letter-spacing: 0.05em;
 
-      a {
-        color: #7a8cb4;
-        text-decoration: none;
-
-        &:hover {
-          color: #00ffff;
-        }
+      span {
+        color: #a8a29e;
       }
     }
-  }
-}
-
-@keyframes pulseDot {
-  0% {
-    opacity: 0.4;
-    transform: scale(0.9);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.15);
-  }
-  100% {
-    opacity: 0.4;
-    transform: scale(0.9);
   }
 }

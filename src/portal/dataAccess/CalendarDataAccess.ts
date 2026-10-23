@@ -204,16 +204,16 @@ export class CalendarDataAccess {
    * Can be imported or subscribed to in Google Calendar, Apple Calendar, or Outlook.
    */
   public static GenerateIcsCalendar(events: CalendarEvent[], calendarName?: string): string {
-    const calName = calendarName || 'Multiverse of Madness - Calendario de Campañas';
+    const calName = calendarName || 'Papustanes en Mazmorras - Calendario de Campañas';
     const lines: string[] = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
-      'PRODID:-//Multiverse of Madness//TTRPG Community Calendar//ES',
+      'PRODID:-//Papustanes en Mazmorras//TTRPG Community Calendar//ES',
       'CALSCALE:GREGORIAN',
       'METHOD:PUBLISH',
       `X-WR-CALNAME:${calName}`,
       'X-WR-TIMEZONE:America/Mexico_City',
-      'X-WR-CALDESC:Calendario canónico de partidas y eventos de rol de Multiverse of Madness',
+      'X-WR-CALDESC:Calendario canónico de partidas y eventos de rol de Papustanes en Mazmorras',
     ];
 
     events.forEach((evt) => {
@@ -277,14 +277,14 @@ export class CalendarDataAccess {
 
     const dates = `${cleanDate}T${hour}${minute}00/${cleanDate}T${endHour}${minute}00`;
     const title = `${event.title} [${event.authorTag}]`;
-    const details = `${event.description || 'Partida de rol en Multiverse of Madness'}\nOrganizador: ${event.authorTag}\nHora: ${event.time}`;
+    const details = `${event.description || 'Partida de rol en Papustanes en Mazmorras'}\nOrganizador: ${event.authorTag}\nHora: ${event.time}`;
 
     const params = new URLSearchParams({
       action: 'TEMPLATE',
       text: title,
       dates: dates,
       details: details,
-      location: 'Foundry VTT (Multiverse of Madness)',
+      location: 'Foundry VTT (Papustanes en Mazmorras)',
     });
 
     if (event.recurrence === 'WEEKLY') {

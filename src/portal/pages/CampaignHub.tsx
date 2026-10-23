@@ -84,8 +84,8 @@ export const CampaignHub: FC = () => {
 
       {isLoading && (
         <div className="text-center py-5">
-          <div className="spinner-border text-info" role="status" />
-          <p className="mt-2 text-muted font-monospace">Sincronizando universos del multiverso...</p>
+          <div className="spinner-border text-warning" role="status" />
+          <p className="mt-2 text-muted font-monospace">Consultando los reinos y crónicas del multiverso...</p>
         </div>
       )}
 
@@ -108,8 +108,8 @@ export const CampaignHub: FC = () => {
           <div className="scifi-modal-dialog" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header-cyber">
               <h4>
-                <i className="fas fa-plus-circle me-2" />
-                Registrar Nuevo Mundo TTRPG
+                <i className="fas fa-scroll me-2 text-warning" />
+                Registrar Nueva Crónica / Reino
               </h4>
               <button
                 type="button"
@@ -172,8 +172,8 @@ export const CampaignHub: FC = () => {
                   Cancelar
                 </button>
                 <button type="submit" className="btn-submit">
-                  <i className="fas fa-save me-1" />
-                  Registrar en el Catálogo
+                  <i className="fas fa-feather-pointed me-1" />
+                  Añadir al Códice de Campañas
                 </button>
               </div>
             </form>

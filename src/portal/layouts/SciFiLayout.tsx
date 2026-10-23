@@ -7,12 +7,12 @@ export const SciFiLayout: FC = () => {
   const { session } = useAuth();
 
   return (
-    <div className="scifi-portal-shell">
-      {/* Sci-Fi Top Navigation Bar */}
-      <header className="scifi-topbar">
+    <div className="scifi-portal-shell fantasy-theme">
+      {/* Medieval Fantasy Top Navigation Bar */}
+      <header className="scifi-topbar fantasy-topbar">
         <div className="topbar-inner">
           <Link to="/campaigns" className="brand-mark">
-            <span className="brand-title-main">MULTIVERSE OF MADNESS</span>
+            <span className="brand-title-main">PAPUSTANES EN MAZMORRAS</span>
           </Link>
 
           <div className="topbar-actions">
@@ -21,21 +21,21 @@ export const SciFiLayout: FC = () => {
               target="_blank"
               rel="noreferrer"
               className="btn-vtt-quick"
-              title="Abrir túnel directo al servidor Foundry VTT"
+              title="Abrir mesa virtual en el servidor Foundry VTT"
             >
-              <span className="vtt-dot" />
+              <i className="fas fa-dice-d20 vtt-fantasy-icon" />
               <span>Foundry VTT</span>
             </a>
 
             {session ? (
               <Link to="/dashboard" className="btn-intranet-login">
-                <i className="fas fa-terminal" />
-                <span>Intranet ({session.username})</span>
+                <i className="fas fa-shield-halved" />
+                <span>Gremio ({session.username})</span>
               </Link>
             ) : (
               <Link to="/login" className="btn-intranet-login">
-                <i className="fas fa-key" />
-                <span>Acceso Agente</span>
+                <i className="fas fa-dungeon" />
+                <span>Acceso Aventurero</span>
               </Link>
             )}
           </div>
@@ -47,11 +47,11 @@ export const SciFiLayout: FC = () => {
         <Outlet />
       </div>
 
-      {/* Modern Sci-Fi Global Footer */}
-      <footer className="scifi-footer">
+      {/* Medieval Fantasy Global Footer */}
+      <footer className="scifi-footer fantasy-footer">
         <div className="footer-bottom">
-          <span>© 2024-2026 MULTIVERSE OF MADNESS // CIUDADELA ZAREK</span>
-          <span>DISEÑADO PARA TRANSMISIÓN NARRATIVA Y GESTIÓN VTT</span>
+          <span>© 2024-2026 PAPUSTANES EN MAZMORRAS // CRÓNICAS Y AVENTURAS DE ROL</span>
+          <span>SALA DE AVENTURAS Y GESTIÓN VTT</span>
         </div>
       </footer>
     </div>
