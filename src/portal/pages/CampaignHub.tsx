@@ -2,7 +2,7 @@ import { FC, useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CampaignCarousel } from '../components/CampaignCarousel';
 import { InteractiveCalendar } from '../components/InteractiveCalendar';
-import { CampaignBase, CampaignStatusType } from '../models/Campaigns/CampaignModels';
+import { CampaignBase, CampaignStatusType, CampaignDifficultyType } from '../models/Campaigns/CampaignModels';
 import { useCampaignHubViewModel } from '../viewModels/useCampaignHubViewModel';
 import './CampaignHub.scss';
 
@@ -52,7 +52,12 @@ export const CampaignHub: FC = () => {
   const [newSystem, setNewSystem] = useState<string>('D&D 5E Modificado');
   const [newDM, setNewDM] = useState<string>('');
   const [newDesc, setNewDesc] = useState<string>('');
-  const [newStatus] = useState<CampaignStatusType>('UPCOMING');
+  const [newStatus, setNewStatus] = useState<CampaignStatusType>('UPCOMING');
+  const [newDifficulty, setNewDifficulty] = useState<CampaignDifficultyType>('Intermedio');
+  const [newPlayerCount, setNewPlayerCount] = useState<number | ''>('');
+  const [newStartDate, setNewStartDate] = useState<string>('');
+  const [newFoundryUrl, setNewFoundryUrl] = useState<string>('');
+  const [newCoverUrl, setNewCoverUrl] = useState<string>('');
 
   // Edit Campaign Modal state
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
@@ -62,11 +67,45 @@ export const CampaignHub: FC = () => {
   const [editDM, setEditDM] = useState<string>('');
   const [editStartDate, setEditStartDate] = useState<string>('');
   const [editPlayerCount, setEditPlayerCount] = useState<number | ''>('');
-  const [editSessionCount, setEditSessionCount] = useState<number | ''>('');
+  const [editDifficulty, setEditDifficulty] = useState<CampaignDifficultyType>('Intermedio');
   const [editStatus, setEditStatus] = useState<CampaignStatusType>('ACTIVE');
   const [editCoverUrl, setEditCoverUrl] = useState<string>('');
   const [editFoundryUrl, setEditFoundryUrl] = useState<string>('');
   const [editDesc, setEditDesc] = useState<string>('');
+
+  // Helper to handle image file upload (PNG, JPG, GIF) and convert to base64 DataURL
+  const handleImageFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    isEdit: boolean
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    const isValidExt = ['png', 'jpg', 'jpeg', 'gif'].includes(ext || '');
+
+    if (!validTypes.includes(file.type) && !isValidExt) {
+      alert('Formato no compatible. Por favor sube una imagen PNG, JPG o GIF.');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('El archivo es demasiado grande (máximo 5 MB) para almacenamiento local.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      if (isEdit) {
+        setEditCoverUrl(result);
+      } else {
+        setNewCoverUrl(result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Consolidate all campaigns starting with active one, plus local ones and overrides applied
   const allCampaigns = useMemo<CampaignBase[]>(() => {
@@ -91,7 +130,7 @@ export const CampaignHub: FC = () => {
     setEditDM(camp.CampaignGameMaster);
     setEditStartDate(camp.CampaignStartDate || '');
     setEditPlayerCount(camp.CampaignPlayerCount ?? '');
-    setEditSessionCount(camp.CampaignSessionCount ?? '');
+    setEditDifficulty((camp.CampaignDifficulty as CampaignDifficultyType) || 'Intermedio');
     setEditStatus(camp.CampaignStatus);
     setEditCoverUrl(camp.CampaignCoverUrl || '');
     setEditFoundryUrl(camp.CampaignFoundryUrl || '');
@@ -110,7 +149,7 @@ export const CampaignHub: FC = () => {
       CampaignGameMaster: editDM.trim(),
       CampaignStartDate: editStartDate.trim() || null,
       CampaignPlayerCount: editPlayerCount === '' ? null : Number(editPlayerCount),
-      CampaignSessionCount: editSessionCount === '' ? null : Number(editSessionCount),
+      CampaignDifficulty: editDifficulty,
       CampaignStatus: editStatus,
       CampaignCoverUrl: editCoverUrl.trim() || null,
       CampaignFoundryUrl: editFoundryUrl.trim() || null,
@@ -147,16 +186,17 @@ export const CampaignHub: FC = () => {
       CampaignID: slug,
       CampaignTitle: newTitle,
       CampaignSlug: slug,
-      CampaignSystem: newSystem || 'TTRPG Sci-Fi',
+      CampaignSystem: newSystem || 'D&D 5E Modificado',
       CampaignDescription: newDesc || 'Nueva crónica multiversal en preparación.',
-      CampaignCoverUrl: null,
+      CampaignCoverUrl: newCoverUrl.trim() || null,
       CampaignBannerUrl: null,
       CampaignStatus: newStatus,
       CampaignGameMaster: newDM || 'Game Master',
-      CampaignStartDate: 'Por anunciar',
-      CampaignPlayerCount: null,
+      CampaignStartDate: newStartDate.trim() || 'Por anunciar',
+      CampaignPlayerCount: newPlayerCount === '' ? null : Number(newPlayerCount),
       CampaignSessionCount: 0,
-      CampaignFoundryUrl: null,
+      CampaignDifficulty: newDifficulty,
+      CampaignFoundryUrl: newFoundryUrl.trim() || null,
       CampaignWikiHomeSlug: slug,
       CampaignTags: ['Comunidad', 'Nuevo Mundo'],
     };
@@ -175,6 +215,11 @@ export const CampaignHub: FC = () => {
     setNewTitle('');
     setNewDesc('');
     setNewDM('');
+    setNewStartDate('');
+    setNewPlayerCount('');
+    setNewDifficulty('Intermedio');
+    setNewFoundryUrl('');
+    setNewCoverUrl('');
   };
 
   return (
@@ -289,6 +334,126 @@ export const CampaignHub: FC = () => {
                 </div>
               </div>
 
+              <div className="row g-2 mb-3">
+                <div className="col-md-4 form-group">
+                  <label>Estado</label>
+                  <select
+                    value={newStatus}
+                    onChange={(e) => setNewStatus(e.target.value as CampaignStatusType)}
+                  >
+                    <option value="ACTIVE">Activa (ACTIVE)</option>
+                    <option value="UPCOMING">Próximamente (UPCOMING)</option>
+                    <option value="DEVELOPMENT">En Desarrollo (DEVELOPMENT)</option>
+                    <option value="ARCHIVED">Archivada (ARCHIVED)</option>
+                  </select>
+                </div>
+                <div className="col-md-4 form-group">
+                  <label>Jugadores</label>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="Ej: 4"
+                    value={newPlayerCount}
+                    onChange={(e) => setNewPlayerCount(e.target.value === '' ? '' : Number(e.target.value))}
+                  />
+                </div>
+                <div className="col-md-4 form-group">
+                  <label>Dificultad</label>
+                  <select
+                    value={newDifficulty}
+                    onChange={(e) => setNewDifficulty(e.target.value as CampaignDifficultyType)}
+                  >
+                    <option value="Begginer friendly">Begginer friendly</option>
+                    <option value="Intermedio">Intermedio</option>
+                    <option value="Difícil">Difícil</option>
+                    <option value="Hardcore">Hardcore</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="row g-2 mb-3">
+                <div className="col-md-6 form-group">
+                  <label>Fecha de Inicio</label>
+                  <input
+                    type="text"
+                    placeholder="Ej: 15 de febrero de 2024"
+                    value={newStartDate}
+                    onChange={(e) => setNewStartDate(e.target.value)}
+                  />
+                </div>
+                <div className="col-md-6 form-group">
+                  <label>Enlace Foundry VTT</label>
+                  <input
+                    type="url"
+                    placeholder="https://..."
+                    value={newFoundryUrl}
+                    onChange={(e) => setNewFoundryUrl(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="form-group mb-3">
+                <label>
+                  <i className="fas fa-image me-1 text-warning" />
+                  Imagen de Portada (PNG, JPG o GIF)
+                </label>
+                <div className="image-input-container">
+                  <div className="d-flex gap-2 mb-2 align-items-center flex-wrap">
+                    <label className="btn-upload-file-label">
+                      <i className="fas fa-cloud-arrow-up me-1" />
+                      Subir archivo (PNG, JPG, GIF)
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/gif,.png,.jpg,.jpeg,.gif"
+                        className="visually-hidden"
+                        onChange={(e) => handleImageFileChange(e, false)}
+                      />
+                    </label>
+                    {newCoverUrl && (
+                      <button
+                        type="button"
+                        className="btn-clear-img"
+                        onClick={() => setNewCoverUrl('')}
+                      >
+                        <i className="fas fa-trash-can me-1" />
+                        Quitar Imagen
+                      </button>
+                    )}
+                  </div>
+
+                  <input
+                    type="text"
+                    placeholder="O introduce enlace web: https://... (png, jpg, gif)"
+                    value={newCoverUrl}
+                    onChange={(e) => setNewCoverUrl(e.target.value)}
+                  />
+
+                  {newCoverUrl && (
+                    <div className="image-preview-box mt-2">
+                      <div className="preview-header">
+                        <span>Vista Previa de Imagen:</span>
+                        <span className="badge-img-type">
+                          {newCoverUrl.startsWith('data:image/gif') || newCoverUrl.toLowerCase().endsWith('.gif')
+                            ? 'GIF ANIMADO'
+                            : newCoverUrl.startsWith('data:image/png') || newCoverUrl.toLowerCase().endsWith('.png')
+                            ? 'PNG'
+                            : newCoverUrl.startsWith('data:image/jpeg') || newCoverUrl.toLowerCase().endsWith('.jpg') || newCoverUrl.toLowerCase().endsWith('.jpeg')
+                            ? 'JPG'
+                            : 'IMAGEN WEB'}
+                        </span>
+                      </div>
+                      <div className="preview-img-wrapper">
+                        <img
+                          src={newCoverUrl}
+                          alt="Vista previa portada"
+                          className="preview-img"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <div className="form-group mb-3">
                 <label>Sinopsis / Ambientación</label>
                 <textarea
@@ -381,7 +546,7 @@ export const CampaignHub: FC = () => {
                   </select>
                 </div>
                 <div className="col-md-4 form-group">
-                  <label>Aventureros (Héroes)</label>
+                  <label>Jugadores</label>
                   <input
                     type="number"
                     min="0"
@@ -391,14 +556,16 @@ export const CampaignHub: FC = () => {
                   />
                 </div>
                 <div className="col-md-4 form-group">
-                  <label>Sesiones Jugadas</label>
-                  <input
-                    type="number"
-                    min="0"
-                    placeholder="Ej: 24"
-                    value={editSessionCount}
-                    onChange={(e) => setEditSessionCount(e.target.value === '' ? '' : Number(e.target.value))}
-                  />
+                  <label>Dificultad</label>
+                  <select
+                    value={editDifficulty}
+                    onChange={(e) => setEditDifficulty(e.target.value as CampaignDifficultyType)}
+                  >
+                    <option value="Begginer friendly">Begginer friendly</option>
+                    <option value="Intermedio">Intermedio</option>
+                    <option value="Difícil">Difícil</option>
+                    <option value="Hardcore">Hardcore</option>
+                  </select>
                 </div>
               </div>
 
@@ -424,13 +591,65 @@ export const CampaignHub: FC = () => {
               </div>
 
               <div className="form-group mb-3">
-                <label>URL de Imagen de Portada</label>
-                <input
-                  type="url"
-                  placeholder="https://... (vacío para fondo por defecto)"
-                  value={editCoverUrl}
-                  onChange={(e) => setEditCoverUrl(e.target.value)}
-                />
+                <label>
+                  <i className="fas fa-image me-1 text-warning" />
+                  Imagen de Portada (PNG, JPG o GIF)
+                </label>
+                <div className="image-input-container">
+                  <div className="d-flex gap-2 mb-2 align-items-center flex-wrap">
+                    <label className="btn-upload-file-label">
+                      <i className="fas fa-cloud-arrow-up me-1" />
+                      Subir archivo (PNG, JPG, GIF)
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/gif,.png,.jpg,.jpeg,.gif"
+                        className="visually-hidden"
+                        onChange={(e) => handleImageFileChange(e, true)}
+                      />
+                    </label>
+                    {editCoverUrl && (
+                      <button
+                        type="button"
+                        className="btn-clear-img"
+                        onClick={() => setEditCoverUrl('')}
+                      >
+                        <i className="fas fa-trash-can me-1" />
+                        Quitar Imagen
+                      </button>
+                    )}
+                  </div>
+
+                  <input
+                    type="text"
+                    placeholder="O introduce enlace web: https://... (png, jpg, gif)"
+                    value={editCoverUrl}
+                    onChange={(e) => setEditCoverUrl(e.target.value)}
+                  />
+
+                  {editCoverUrl && (
+                    <div className="image-preview-box mt-2">
+                      <div className="preview-header">
+                        <span>Vista Previa de Imagen:</span>
+                        <span className="badge-img-type">
+                          {editCoverUrl.startsWith('data:image/gif') || editCoverUrl.toLowerCase().endsWith('.gif')
+                            ? 'GIF ANIMADO'
+                            : editCoverUrl.startsWith('data:image/png') || editCoverUrl.toLowerCase().endsWith('.png')
+                            ? 'PNG'
+                            : editCoverUrl.startsWith('data:image/jpeg') || editCoverUrl.toLowerCase().endsWith('.jpg') || editCoverUrl.toLowerCase().endsWith('.jpeg')
+                            ? 'JPG'
+                            : 'IMAGEN WEB'}
+                        </span>
+                      </div>
+                      <div className="preview-img-wrapper">
+                        <img
+                          src={editCoverUrl}
+                          alt="Vista previa portada"
+                          className="preview-img"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="form-group mb-3">

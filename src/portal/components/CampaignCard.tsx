@@ -84,14 +84,14 @@ export const CampaignCard: FC<CampaignCardProps> = ({ campaign, isFeatured = fal
           <div className="meta-item">
             <span className="meta-label">Jugadores</span>
             <span className="meta-value">
-              {campaign.CampaignPlayerCount !== null ? `${campaign.CampaignPlayerCount} Agentes` : 'TBD'}
+              {campaign.CampaignPlayerCount !== null ? `${campaign.CampaignPlayerCount} Jugadores` : 'TBD'}
             </span>
           </div>
 
           <div className="meta-item">
-            <span className="meta-label">Sesiones</span>
+            <span className="meta-label">Dificultad</span>
             <span className="meta-value">
-              {campaign.CampaignSessionCount !== null ? `${campaign.CampaignSessionCount} Sesiones` : '0'}
+              {campaign.CampaignDifficulty || 'Intermedio'}
             </span>
           </div>
         </div>

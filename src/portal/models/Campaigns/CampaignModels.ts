@@ -4,6 +4,7 @@
  */
 
 export type CampaignStatusType = 'ACTIVE' | 'UPCOMING' | 'ARCHIVED' | 'DEVELOPMENT';
+export type CampaignDifficultyType = 'Begginer friendly' | 'Intermedio' | 'Difícil' | 'Hardcore';
 
 export interface CampaignBase {
   CampaignID: string;
@@ -18,6 +19,7 @@ export interface CampaignBase {
   CampaignStartDate: string | null;
   CampaignPlayerCount: number | null;
   CampaignSessionCount: number | null;
+  CampaignDifficulty?: CampaignDifficultyType | string | null;
   CampaignFoundryUrl: string | null;
   CampaignWikiHomeSlug: string | null;
   CampaignTags: string[];

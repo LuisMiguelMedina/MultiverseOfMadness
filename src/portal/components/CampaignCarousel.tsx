@@ -261,21 +261,21 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
 
             <div className="hud-cell">
               <span className="hud-label">
-                <i className="fas fa-shield-halved me-1" />
-                Aventureros
+                <i className="fas fa-users me-1" />
+                Jugadores
               </span>
               <span className="hud-value">
-                {camp.CampaignPlayerCount !== null ? `${camp.CampaignPlayerCount} Héroes` : 'TBD'}
+                {camp.CampaignPlayerCount !== null ? `${camp.CampaignPlayerCount} Jugadores` : 'TBD'}
               </span>
             </div>
 
             <div className="hud-cell">
               <span className="hud-label">
-                <i className="fas fa-dice-d20 me-1" />
-                Sesiones
+                <i className="fas fa-skull me-1" />
+                Dificultad
               </span>
-              <span className="hud-value">
-                {camp.CampaignSessionCount !== null ? `${camp.CampaignSessionCount} Sesiones` : '0'}
+              <span className="hud-value" title={camp.CampaignDifficulty || 'Intermedio'}>
+                {camp.CampaignDifficulty || 'Intermedio'}
               </span>
             </div>
           </div>
