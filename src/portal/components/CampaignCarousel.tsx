@@ -255,19 +255,6 @@ export const CampaignCarousel: FC<CampaignCarouselProps> = ({
 
   return (
     <div className="campaign-carousel-wrapper">
-      {/* HUD Counter Header */}
-      <div className="carousel-status-bar">
-        <div className="status-indicator-left">
-          <span className="pulsing-radar-dot" />
-          <span className="status-label">Selector de Mundos VTT</span>
-        </div>
-        <div className="status-counter-right">
-          <span>
-            MUNDO <strong>{currentIndex + 1}</strong> DE <strong>{total}</strong>
-          </span>
-        </div>
-      </div>
-
       {/* Main Stage with Arrows and Cards */}
       <div className="carousel-stage">
         {/* Left Arrow */}

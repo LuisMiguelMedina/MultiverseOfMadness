@@ -69,19 +69,12 @@ export const CampaignHub: FC = () => {
     <div className="scifi-hub-container">
       {/* ---------------- 1. COMMAND HEADER ---------------- */}
       <header className="hub-command-header">
-        <div className="header-pill-badge">
-          <i className="fas fa-satellite-dish me-2" />
-          <span>Centro de Mando & Archivo Multiversal</span>
-        </div>
-
         <h1 className="header-main-title">
           MULTIVERSE OF MADNESS
         </h1>
 
         <p className="header-tagline">
-          Catálogo general de universos TTRPG y servidores Foundry VTT. Selecciona una card en el
-          carrusel interactivo para desclasificar su wiki de lore, facciones y conectar a su sesión
-          en vivo.
+          Los universos más cercanos a nosotros no tienen las mismas historias que contar, pero una verdad tienen todos. Somos y seremos pertenecientes al dictamen del cosmos
         </p>
       </header>
 
