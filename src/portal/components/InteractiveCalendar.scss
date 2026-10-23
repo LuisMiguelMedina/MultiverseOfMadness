@@ -589,6 +589,11 @@
     z-index: 9999;
     padding: 1rem;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+
+    @media (max-height: 750px) {
+      align-items: flex-start;
+    }
 
     .calendar-modal-container {
       background: #0d1222;
@@ -604,12 +609,38 @@
       animation: modalScaleIn 0.2s ease-out;
       margin: auto;
 
+      .modal-body-scrollable,
+      .follow-modal-body {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto !important;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+        padding: 1.25rem 1.4rem;
+
+        /* Custom scrollbar */
+        &::-webkit-scrollbar {
+          width: 7px;
+        }
+        &::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.35);
+          border-radius: 4px;
+        }
+        &::-webkit-scrollbar-thumb {
+          background: rgba(245, 158, 11, 0.45);
+          border-radius: 4px;
+          &:hover {
+            background: rgba(245, 158, 11, 0.8);
+          }
+        }
+      }
+
       &.follow-modal {
         max-width: 660px;
       }
 
       &.tags-modal {
-        max-width: 660px;
+        max-width: 680px;
 
         .tag-editor-card {
           background: rgba(14, 18, 30, 0.85);
