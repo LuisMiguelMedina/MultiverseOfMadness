@@ -1,8 +1,32 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { Link, Outlet } from 'react-router-dom';
+import { ref, onValue } from 'firebase/database';
+import { db } from '../firebase';
 import './SciFiLayout.scss';
 
 export const SciFiLayout: FC = () => {
+  // Sync dynamic favicon from Firebase RTDB (best-effort, non-blocking)
+  useEffect(() => {
+    const faviconRef = ref(db, 'system/branding/favicon');
+    const unsubscribe = onValue(
+      faviconRef,
+      (snapshot) => {
+        const data = snapshot.val();
+        if (data && (data.base64 || data.url)) {
+          const iconHref = data.base64 || data.url;
+          const iconLinks = document.querySelectorAll<HTMLLinkElement>("link[rel*='icon']");
+          iconLinks.forEach((link) => {
+            link.href = iconHref;
+          });
+        }
+      },
+      () => {
+        // Fallback silently to static default icons if offline
+      },
+    );
+
+    return () => unsubscribe();
+  }, []);
   return (
     <div className="scifi-portal-shell fantasy-theme">
       {/* Medieval Fantasy Top Navigation Bar */}
