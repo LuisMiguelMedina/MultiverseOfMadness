@@ -1,7 +1,9 @@
 import { FC, useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   CalendarEvent,
   CalendarEventOccurrence,
+  CalendarEventTag,
   DEFAULT_TAGS,
   PRESET_EVENT_STYLES,
   RecurrenceType,
@@ -12,6 +14,15 @@ import './InteractiveCalendar.scss';
 type FollowTab = 'FULL' | 'DM' | 'EVENT';
 
 export const InteractiveCalendar: FC = () => {
+  const [searchParams] = useSearchParams();
+
+  // Debug mode active (?debug=1) allows managing tags
+  const isDebug = useMemo(() => {
+    if (searchParams.get('debug') === '1') return true;
+    if (typeof window !== 'undefined' && window.location.search.includes('debug=1')) return true;
+    return false;
+  }, [searchParams]);
+
   // Navigation strictly restricted to current month (Octubre 2026) and next month (Noviembre 2026)
   const [monthOffset, setMonthOffset] = useState<0 | 1>(0);
 
@@ -20,6 +31,26 @@ export const InteractiveCalendar: FC = () => {
   }, [monthOffset]);
 
   const [events, setEvents] = useState<CalendarEvent[]>([]);
+
+  // Dynamic tags state loaded from Firebase and local storage
+  const [tags, setTags] = useState<CalendarEventTag[]>(() => {
+    try {
+      const stored = localStorage.getItem('mom_calendar_tags');
+      return stored ? JSON.parse(stored) : DEFAULT_TAGS;
+    } catch {
+      return DEFAULT_TAGS;
+    }
+  });
+
+  // Tag Manager Modal state (?debug=1)
+  const [showTagModal, setShowTagModal] = useState<boolean>(false);
+  const [editingTag, setEditingTag] = useState<CalendarEventTag | null>(null);
+  const [tagFormLabel, setTagFormLabel] = useState<string>('');
+  const [tagFormCategory, setTagFormCategory] = useState<'TYPE' | 'AUTHOR'>('AUTHOR');
+  const [tagFormColor, setTagFormColor] = useState<string>('#8a58f5');
+  const [tagFormTextColor, setTagFormTextColor] = useState<string>('#ffffff');
+  const [tagFilterTab, setTagFilterTab] = useState<'ALL' | 'TYPE' | 'AUTHOR'>('ALL');
+  const [tagActionMsg, setTagActionMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Modals state
   const [showEventModal, setShowEventModal] = useState<boolean>(false);
@@ -61,6 +92,100 @@ export const InteractiveCalendar: FC = () => {
       unsubscribe();
     };
   }, [selectedFollowEventId]);
+
+  // Subscribe to Firebase RTDB calendar tags
+  useEffect(() => {
+    const unsubTags = CalendarDataAccess.SubscribeTags((loadedTags) => {
+      if (loadedTags && loadedTags.length > 0) {
+        setTags(loadedTags);
+      }
+    });
+
+    return () => {
+      unsubTags();
+    };
+  }, []);
+
+  // Tag Management Handlers (?debug=1)
+  const handleOpenTagManager = (tagToEdit?: CalendarEventTag) => {
+    if (tagToEdit) {
+      setEditingTag(tagToEdit);
+      setTagFormLabel(tagToEdit.label);
+      setTagFormCategory(tagToEdit.category);
+      setTagFormColor(tagToEdit.color);
+      setTagFormTextColor(tagToEdit.textColor);
+    } else {
+      setEditingTag(null);
+      setTagFormLabel('');
+      setTagFormCategory('AUTHOR');
+      setTagFormColor('#8a58f5');
+      setTagFormTextColor('#ffffff');
+    }
+    setTagActionMsg(null);
+    setShowTagModal(true);
+  };
+
+  const handleSaveTag = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!tagFormLabel.trim()) return;
+
+    const id = editingTag?.id || tagFormLabel.toLowerCase().trim().replace(/[^a-z0-9]+/g, '_');
+    const tagData: CalendarEventTag = {
+      id,
+      label: tagFormLabel.trim().toUpperCase(),
+      category: tagFormCategory,
+      color: tagFormColor,
+      textColor: tagFormTextColor,
+    };
+
+    const res = await CalendarDataAccess.SaveTag(tagData);
+    if (res.CodeNumber === 200 && res.Result) {
+      setTags((prev) => {
+        const idx = prev.findIndex((t) => t.id === tagData.id);
+        if (idx >= 0) {
+          const next = [...prev];
+          next[idx] = tagData;
+          return next;
+        }
+        return [...prev, tagData];
+      });
+      setTagActionMsg({ type: 'success', text: `Etiqueta "${tagData.label}" guardada exitosamente.` });
+      setEditingTag(null);
+      setTagFormLabel('');
+    } else {
+      setTagActionMsg({ type: 'error', text: res.Message || 'Error al guardar la etiqueta.' });
+    }
+  };
+
+  const handleDeleteTag = async (tagId: string, tagLabel: string) => {
+    if (!window.confirm(`¿Estás seguro de que deseas eliminar la etiqueta "${tagLabel}"?`)) {
+      return;
+    }
+    const res = await CalendarDataAccess.DeleteTag(tagId);
+    if (res.CodeNumber === 200) {
+      setTags((prev) => prev.filter((t) => t.id !== tagId));
+      if (editingTag?.id === tagId) {
+        setEditingTag(null);
+        setTagFormLabel('');
+      }
+      setTagActionMsg({ type: 'success', text: `Etiqueta "${tagLabel}" eliminada.` });
+    } else {
+      setTagActionMsg({ type: 'error', text: res.Message || 'Error al eliminar la etiqueta.' });
+    }
+  };
+
+  const handleResetTags = async () => {
+    if (!window.confirm('¿Deseas restablecer todas las etiquetas a los valores originales por defecto?')) {
+      return;
+    }
+    const res = await CalendarDataAccess.ResetDefaultTags();
+    if (res.CodeNumber === 200 && res.Result) {
+      setTags(res.Result);
+      setEditingTag(null);
+      setTagFormLabel('');
+      setTagActionMsg({ type: 'success', text: 'Etiquetas restablecidas a valores iniciales.' });
+    }
+  };
 
   const currentYear = displayDate.getFullYear();
   const currentMonth = displayDate.getMonth(); // 0-indexed: 9 = Octubre, 10 = Noviembre
@@ -401,27 +526,47 @@ export const InteractiveCalendar: FC = () => {
         {/* Legend pills matching the user's manual design */}
         <div className="calendar-legend-container">
           <div className="legend-row types-row">
-            {DEFAULT_TAGS.filter((t) => t.category === 'TYPE').map((tag) => (
+            {tags.filter((t) => t.category === 'TYPE').map((tag) => (
               <span
                 key={tag.id}
-                className="legend-pill"
+                className={`legend-pill ${isDebug ? 'legend-pill-debug' : ''}`}
                 style={{ background: tag.color, color: tag.textColor }}
+                onClick={() => isDebug && handleOpenTagManager(tag)}
+                title={isDebug ? `Clic para editar "${tag.label}" (?debug=1)` : undefined}
               >
                 {tag.label}
+                {isDebug && <i className="fas fa-pen ms-1 debug-tag-icon" />}
               </span>
             ))}
           </div>
           <div className="legend-row authors-row">
-            {DEFAULT_TAGS.filter((t) => t.category === 'AUTHOR').map((tag) => (
+            {tags.filter((t) => t.category === 'AUTHOR').map((tag) => (
               <span
                 key={tag.id}
-                className="legend-pill"
+                className={`legend-pill ${isDebug ? 'legend-pill-debug' : ''}`}
                 style={{ background: tag.color, color: tag.textColor }}
+                onClick={() => isDebug && handleOpenTagManager(tag)}
+                title={isDebug ? `Clic para editar "${tag.label}" (?debug=1)` : undefined}
               >
                 {tag.label}
+                {isDebug && <i className="fas fa-pen ms-1 debug-tag-icon" />}
               </span>
             ))}
           </div>
+
+          {isDebug && (
+            <div className="legend-debug-toolbar mt-2 d-flex justify-content-end">
+              <button
+                type="button"
+                className="btn-debug-manage-tags"
+                onClick={() => handleOpenTagManager()}
+                title="Administrar etiquetas: crear, editar o eliminar (?debug=1)"
+              >
+                <i className="fas fa-tags me-1" />
+                <span>Gestionar Etiquetas</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Actions bar with Seguir Completo, Seguir DM, Seguir Evento */}
@@ -626,7 +771,7 @@ export const InteractiveCalendar: FC = () => {
                 <div className="form-row">
                   <label>Organizador / Etiqueta de Autor</label>
                   <select value={formAuthor} onChange={(e) => setFormAuthor(e.target.value)}>
-                    {DEFAULT_TAGS.filter((t) => t.category === 'AUTHOR').map((tag) => (
+                    {tags.filter((t) => t.category === 'AUTHOR').map((tag) => (
                       <option key={tag.id} value={tag.label}>
                         {tag.label}
                       </option>
@@ -638,8 +783,11 @@ export const InteractiveCalendar: FC = () => {
                   <label>Categoría</label>
                   <select value={formCategory} onChange={(e) => setFormCategory(e.target.value)}>
                     <option value="CAMPAÑA">CAMPAÑA</option>
-                    <option value="EVENTOS">EVENTOS</option>
-                    <option value="WEAS CORTAS">WEAS CORTAS</option>
+                    {tags.filter((t) => t.category === 'TYPE').map((tag) => (
+                      <option key={tag.id} value={tag.label}>
+                        {tag.label}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -848,7 +996,7 @@ export const InteractiveCalendar: FC = () => {
                   <div className="dm-selector-box mb-3">
                     <label className="section-small-label">Selecciona tu Game Master / Organizador:</label>
                     <div className="dm-pills-row">
-                      {DEFAULT_TAGS.filter((t) => t.category === 'AUTHOR').map((tag) => (
+                      {tags.filter((t) => t.category === 'AUTHOR').map((tag) => (
                         <button
                           key={tag.id}
                           type="button"
@@ -1029,6 +1177,264 @@ export const InteractiveCalendar: FC = () => {
                 type="button"
                 className="btn-cancel-cyber"
                 onClick={() => setShowFollowModal(false)}
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ---------------- 5. TAG MANAGEMENT MODAL (DEBUG MODE ONLY) ---------------- */}
+      {showTagModal && isDebug && (
+        <div className="calendar-modal-backdrop" onClick={() => setShowTagModal(false)}>
+          <div
+            className="calendar-modal-container tags-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header-cyber">
+              <h3>
+                <i className="fas fa-tags me-2 text-warning" />
+                Gestionar Etiquetas del Calendario
+              </h3>
+              <button
+                type="button"
+                className="btn-modal-close"
+                onClick={() => setShowTagModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="modal-body-scrollable">
+              {tagActionMsg && (
+                <div
+                  className={`alert ${
+                    tagActionMsg.type === 'success' ? 'alert-success' : 'alert-danger'
+                  } py-2 px-3 mb-3 font-monospace`}
+                  style={{ fontSize: '0.8rem' }}
+                >
+                  <i
+                    className={`fas ${
+                      tagActionMsg.type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'
+                    } me-2`}
+                  />
+                  {tagActionMsg.text}
+                </div>
+              )}
+
+              {/* Tag Editor Form */}
+              <div className="tag-editor-card mb-4">
+                <div className="editor-card-header d-flex justify-content-between align-items-center mb-3">
+                  <h4 className="mb-0 fs-6 text-uppercase fw-bold text-amber">
+                    <i className={`fas ${editingTag ? 'fa-edit text-info' : 'fa-plus text-warning'} me-2`} />
+                    {editingTag ? `Modificar Etiqueta: ${editingTag.label}` : 'Nueva Etiqueta'}
+                  </h4>
+                  {editingTag && (
+                    <button
+                      type="button"
+                      className="btn-tag-cancel-edit"
+                      onClick={() => {
+                        setEditingTag(null);
+                        setTagFormLabel('');
+                        setTagFormColor('#8a58f5');
+                        setTagFormTextColor('#ffffff');
+                      }}
+                    >
+                      <i className="fas fa-plus me-1" />
+                      Nueva Etiqueta
+                    </button>
+                  )}
+                </div>
+
+                <form onSubmit={handleSaveTag} className="tag-form-fields">
+                  <div className="row g-2 mb-2">
+                    <div className="col-md-6 form-row">
+                      <label>Nombre / Texto de la Etiqueta</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Ej: KAI, WEAS CORTAS, ONE-SHOT"
+                        value={tagFormLabel}
+                        onChange={(e) => setTagFormLabel(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="col-md-6 form-row">
+                      <label>Categoría</label>
+                      <select
+                        value={tagFormCategory}
+                        onChange={(e) => setTagFormCategory(e.target.value as 'TYPE' | 'AUTHOR')}
+                      >
+                        <option value="AUTHOR">Autor / Game Master (AUTHOR)</option>
+                        <option value="TYPE">Tipo / Categoría de Evento (TYPE)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="row g-2 mb-3 align-items-center">
+                    <div className="col-md-6 form-row">
+                      <label>Color de Fondo</label>
+                      <div className="d-flex align-items-center gap-2">
+                        <input
+                          type="color"
+                          className="color-picker-input-cyber"
+                          value={tagFormColor}
+                          onChange={(e) => setTagFormColor(e.target.value)}
+                        />
+                        <input
+                          type="text"
+                          className="form-control-cyber"
+                          placeholder="#5814e5"
+                          value={tagFormColor}
+                          onChange={(e) => setTagFormColor(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-md-6 form-row">
+                      <label>Color de Texto</label>
+                      <div className="d-flex gap-2">
+                        <button
+                          type="button"
+                          className={`btn-tag-text-color ${tagFormTextColor === '#ffffff' ? 'active' : ''}`}
+                          onClick={() => setTagFormTextColor('#ffffff')}
+                          style={{
+                            background: '#1c1917',
+                            color: '#ffffff',
+                            border: tagFormTextColor === '#ffffff' ? '2px solid #f97316' : '1px solid #444',
+                          }}
+                        >
+                          Blanco (#FFF)
+                        </button>
+                        <button
+                          type="button"
+                          className={`btn-tag-text-color ${tagFormTextColor === '#000000' ? 'active' : ''}`}
+                          onClick={() => setTagFormTextColor('#000000')}
+                          style={{
+                            background: '#ffffff',
+                            color: '#000000',
+                            border: tagFormTextColor === '#000000' ? '2px solid #f97316' : '1px solid #ccc',
+                          }}
+                        >
+                          Negro (#000)
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Live preview */}
+                  <div className="tag-live-preview-box mb-3 d-flex align-items-center gap-3">
+                    <span className="preview-label">Vista Previa:</span>
+                    <span
+                      className="legend-pill"
+                      style={{ background: tagFormColor, color: tagFormTextColor }}
+                    >
+                      {tagFormLabel.trim() || 'VISTA PREVIA'}
+                    </span>
+                  </div>
+
+                  <div className="d-flex justify-content-end gap-2">
+                    <button type="submit" className="btn-save-tag-action">
+                      <i className="fas fa-check me-1" />
+                      {editingTag ? 'Actualizar Etiqueta' : '+ Guardar Etiqueta'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              {/* Tags List */}
+              <div className="tags-management-list-section">
+                <div className="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                  <h4 className="mb-0 fs-6 text-uppercase fw-bold text-warning">
+                    Etiquetas Registradas ({tags.length})
+                  </h4>
+                  <div className="tags-tab-filter">
+                    <button
+                      type="button"
+                      className={`tab-btn ${tagFilterTab === 'ALL' ? 'active' : ''}`}
+                      onClick={() => setTagFilterTab('ALL')}
+                    >
+                      Todas ({tags.length})
+                    </button>
+                    <button
+                      type="button"
+                      className={`tab-btn ${tagFilterTab === 'AUTHOR' ? 'active' : ''}`}
+                      onClick={() => setTagFilterTab('AUTHOR')}
+                    >
+                      Autores ({tags.filter((t) => t.category === 'AUTHOR').length})
+                    </button>
+                    <button
+                      type="button"
+                      className={`tab-btn ${tagFilterTab === 'TYPE' ? 'active' : ''}`}
+                      onClick={() => setTagFilterTab('TYPE')}
+                    >
+                      Tipos ({tags.filter((t) => t.category === 'TYPE').length})
+                    </button>
+                  </div>
+                </div>
+
+                <div className="tags-grid-items">
+                  {tags
+                    .filter((t) => tagFilterTab === 'ALL' || t.category === tagFilterTab)
+                    .map((tag) => (
+                      <div key={tag.id} className="tag-item-card">
+                        <span
+                          className="legend-pill"
+                          style={{ background: tag.color, color: tag.textColor }}
+                        >
+                          {tag.label}
+                        </span>
+
+                        <span className="badge-tag-category">
+                          {tag.category === 'AUTHOR' ? 'AUTOR' : 'TIPO'}
+                        </span>
+
+                        <div className="tag-item-actions">
+                          <button
+                            type="button"
+                            className="btn-action-edit"
+                            title="Editar esta etiqueta"
+                            onClick={() => {
+                              setEditingTag(tag);
+                              setTagFormLabel(tag.label);
+                              setTagFormCategory(tag.category);
+                              setTagFormColor(tag.color);
+                              setTagFormTextColor(tag.textColor);
+                              setTagActionMsg(null);
+                            }}
+                          >
+                            <i className="fas fa-pen-to-square" />
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-action-delete"
+                            title="Eliminar esta etiqueta"
+                            onClick={() => handleDeleteTag(tag.id, tag.label)}
+                          >
+                            <i className="fas fa-trash-can" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-actions-bar d-flex justify-content-between align-items-center">
+              <button
+                type="button"
+                className="btn-reset-tags-action"
+                onClick={handleResetTags}
+                title="Restablecer todas las etiquetas a los valores originales por defecto"
+              >
+                <i className="fas fa-rotate-left me-1" />
+                Restablecer Iniciales
+              </button>
+              <button
+                type="button"
+                className="btn-cancel-cyber"
+                onClick={() => setShowTagModal(false)}
               >
                 Cerrar
               </button>

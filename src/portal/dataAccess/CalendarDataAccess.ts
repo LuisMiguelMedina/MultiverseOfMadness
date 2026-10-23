@@ -6,12 +6,14 @@
 
 import { ref, set, remove, onValue, off, DatabaseReference } from 'firebase/database';
 import { db } from '../firebase';
-import { CalendarEvent } from '../models/Calendar/CalendarModels';
+import { CalendarEvent, CalendarEventTag, DEFAULT_TAGS } from '../models/Calendar/CalendarModels';
 import { ResponseObject } from '../models/Common/TransactionModels';
 import { INITIAL_CALENDAR_EVENTS } from '../data/calendar.seed';
 
 const FIREBASE_CALENDAR_PATH = 'calendar/events';
 const LOCAL_STORAGE_BACKUP_KEY = 'mom_calendar_events_backup';
+const FIREBASE_TAGS_PATH = 'calendar/tags';
+const LOCAL_STORAGE_TAGS_KEY = 'mom_calendar_tags';
 
 export class CalendarDataAccess {
   /**
@@ -294,5 +296,194 @@ export class CalendarDataAccess {
     }
 
     return `https://calendar.google.com/calendar/render?${params.toString()}`;
+  }
+
+  /**
+   * Subscribes in real time to all calendar tags from Firebase RTDB.
+   * If the database path is initially empty, seeds DEFAULT_TAGS.
+   */
+  public static SubscribeTags(
+    onTagsUpdated: (tags: CalendarEventTag[]) => void,
+    onError?: (message: string) => void,
+  ): () => void {
+    const tagsDbRef: DatabaseReference = ref(db, FIREBASE_TAGS_PATH);
+
+    const unsubscribe = onValue(
+      tagsDbRef,
+      (snapshot) => {
+        try {
+          const data = snapshot.val() as Record<string, CalendarEventTag> | null;
+
+          if (!data || Object.keys(data).length === 0) {
+            const seedMap: Record<string, CalendarEventTag> = {};
+            DEFAULT_TAGS.forEach((tag) => {
+              seedMap[tag.id] = tag;
+            });
+
+            set(tagsDbRef, seedMap).catch((e) => {
+              console.warn('Could not seed initial calendar tags to Firebase:', e);
+            });
+
+            onTagsUpdated(DEFAULT_TAGS);
+            try {
+              localStorage.setItem(LOCAL_STORAGE_TAGS_KEY, JSON.stringify(DEFAULT_TAGS));
+            } catch {
+              // Ignore storage errors
+            }
+            return;
+          }
+
+          const tagsList: CalendarEventTag[] = Object.values(data);
+          onTagsUpdated(tagsList);
+
+          try {
+            localStorage.setItem(LOCAL_STORAGE_TAGS_KEY, JSON.stringify(tagsList));
+          } catch {
+            // Ignore storage errors
+          }
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : 'Error al procesar etiquetas de Firebase';
+          console.error('Error processing tags from Firebase:', err);
+          onError?.(msg);
+        }
+      },
+      (error) => {
+        console.warn('Firebase RTDB tags connection error:', error.message);
+        try {
+          const backup = localStorage.getItem(LOCAL_STORAGE_TAGS_KEY);
+          if (backup) {
+            onTagsUpdated(JSON.parse(backup));
+          } else {
+            onTagsUpdated(DEFAULT_TAGS);
+          }
+        } catch {
+          onTagsUpdated(DEFAULT_TAGS);
+        }
+        onError?.(error.message);
+      },
+    );
+
+    return () => {
+      unsubscribe();
+      off(tagsDbRef);
+    };
+  }
+
+  /**
+   * Saves or updates a calendar tag in Firebase RTDB and local storage.
+   */
+  public static async SaveTag(tag: CalendarEventTag): Promise<ResponseObject<CalendarEventTag>> {
+    try {
+      if (!tag.label || !tag.label.trim()) {
+        return {
+          CodeNumber: 400,
+          CodeName: 'BadRequest',
+          Message: 'El nombre de la etiqueta es obligatorio.',
+          ErrorNumber: 400,
+          ServerName: 'local-portal',
+          Result: null,
+        };
+      }
+
+      const id = tag.id || tag.label.toLowerCase().trim().replace(/[^a-z0-9]+/g, '_');
+      const tagToSave: CalendarEventTag = {
+        ...tag,
+        id,
+        label: tag.label.trim().toUpperCase(),
+        color: tag.color || '#5814e5',
+        textColor: tag.textColor || '#ffffff',
+        category: tag.category || 'AUTHOR',
+      };
+
+      const tagRef = ref(db, `${FIREBASE_TAGS_PATH}/${id}`);
+      await set(tagRef, tagToSave);
+
+      return {
+        CodeNumber: 200,
+        CodeName: 'OK',
+        Message: 'Etiqueta guardada exitosamente.',
+        ErrorNumber: null,
+        ServerName: 'firebase-rtdb',
+        Result: tagToSave,
+      };
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Error al guardar la etiqueta en Firebase';
+      return {
+        CodeNumber: 500,
+        CodeName: 'InternalServerError',
+        Message: msg,
+        ErrorNumber: 500,
+        ServerName: 'firebase-rtdb',
+        Result: null,
+      };
+    }
+  }
+
+  /**
+   * Deletes a calendar tag from Firebase RTDB.
+   */
+  public static async DeleteTag(tagId: string): Promise<ResponseObject<boolean>> {
+    try {
+      const tagRef = ref(db, `${FIREBASE_TAGS_PATH}/${tagId}`);
+      await remove(tagRef);
+
+      return {
+        CodeNumber: 200,
+        CodeName: 'OK',
+        Message: 'Etiqueta eliminada exitosamente.',
+        ErrorNumber: null,
+        ServerName: 'firebase-rtdb',
+        Result: true,
+      };
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Error al eliminar la etiqueta de Firebase';
+      return {
+        CodeNumber: 500,
+        CodeName: 'InternalServerError',
+        Message: msg,
+        ErrorNumber: 500,
+        ServerName: 'firebase-rtdb',
+        Result: false,
+      };
+    }
+  }
+
+  /**
+   * Resets calendar tags back to DEFAULT_TAGS.
+   */
+  public static async ResetDefaultTags(): Promise<ResponseObject<CalendarEventTag[]>> {
+    try {
+      const tagsDbRef = ref(db, FIREBASE_TAGS_PATH);
+      const seedMap: Record<string, CalendarEventTag> = {};
+      DEFAULT_TAGS.forEach((tag) => {
+        seedMap[tag.id] = tag;
+      });
+
+      await set(tagsDbRef, seedMap);
+      try {
+        localStorage.setItem(LOCAL_STORAGE_TAGS_KEY, JSON.stringify(DEFAULT_TAGS));
+      } catch {
+        // Ignore storage errors
+      }
+
+      return {
+        CodeNumber: 200,
+        CodeName: 'OK',
+        Message: 'Etiquetas restablecidas a valores predeterminados.',
+        ErrorNumber: null,
+        ServerName: 'firebase-rtdb',
+        Result: DEFAULT_TAGS,
+      };
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Error al restablecer etiquetas';
+      return {
+        CodeNumber: 500,
+        CodeName: 'InternalServerError',
+        Message: msg,
+        ErrorNumber: 500,
+        ServerName: 'firebase-rtdb',
+        Result: null,
+      };
+    }
   }
 }
