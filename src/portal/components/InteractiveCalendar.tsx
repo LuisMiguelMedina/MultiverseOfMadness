@@ -462,7 +462,15 @@ export const InteractiveCalendar: FC = () => {
     setShowFollowModal(true);
   };
 
-  const weekdays = ['DOMINGO', 'LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO'];
+  const weekdays = [
+    { id: 'dom', full: 'DOMINGO', short: 'DOM' },
+    { id: 'lun', full: 'LUNES', short: 'LUN' },
+    { id: 'mar', full: 'MARTES', short: 'MAR' },
+    { id: 'mie', full: 'MIÉRCOLES', short: 'MIÉ' },
+    { id: 'jue', full: 'JUEVES', short: 'JUE' },
+    { id: 'vie', full: 'VIERNES', short: 'VIE' },
+    { id: 'sab', full: 'SÁBADO', short: 'SÁB' },
+  ];
 
   // Filter events for the selected DM in the follow modal
   const dmEventsList = useMemo(() => {
@@ -578,7 +586,8 @@ export const InteractiveCalendar: FC = () => {
             title="Añadir nueva sesión o evento al calendario compartido"
           >
             <i className="fas fa-plus-circle me-1" />
-            + Nuevo Evento
+            <span className="btn-label-desktop">+ Nuevo Evento</span>
+            <span className="btn-label-mobile">+ Evento</span>
           </button>
 
           <button
@@ -588,7 +597,8 @@ export const InteractiveCalendar: FC = () => {
             title="Seguir el calendario completo en Google Calendar"
           >
             <i className="fab fa-google me-1" />
-            Seguir Calendario Completo
+            <span className="btn-label-desktop">Seguir Calendario Completo</span>
+            <span className="btn-label-mobile">Seguir Todo</span>
           </button>
 
           <button
@@ -598,7 +608,8 @@ export const InteractiveCalendar: FC = () => {
             title="Seguir partidas de un DM en particular"
           >
             <i className="fas fa-user-shield me-1" />
-            Seguir DM
+            <span className="btn-label-desktop">Seguir DM</span>
+            <span className="btn-label-mobile">Por DM</span>
           </button>
 
           <button
@@ -608,7 +619,8 @@ export const InteractiveCalendar: FC = () => {
             title="Seguir un evento o campaña específica en Google Calendar"
           >
             <i className="fas fa-dice-d20 me-1" />
-            Seguir Evento
+            <span className="btn-label-desktop">Seguir Evento</span>
+            <span className="btn-label-mobile">Por Evento</span>
           </button>
         </div>
       </div>
@@ -618,8 +630,9 @@ export const InteractiveCalendar: FC = () => {
         {/* Days of the week header */}
         <div className="calendar-weekdays-row">
           {weekdays.map((day) => (
-            <div key={day} className="calendar-weekday-header">
-              {day}
+            <div key={day.id} className="calendar-weekday-header">
+              <span className="weekday-full">{day.full}</span>
+              <span className="weekday-short">{day.short}</span>
             </div>
           ))}
         </div>

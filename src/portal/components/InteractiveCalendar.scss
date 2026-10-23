@@ -5,13 +5,18 @@
 
 .interactive-calendar-wrapper {
   width: 100%;
-  max-width: 660px;
-  margin: 1.5rem auto 0;
+  max-width: 860px;
+  margin: 1.25rem auto 0;
   padding: 0 1rem;
 
   @media (max-width: 768px) {
-    margin: 1rem auto 0;
+    margin: 0.75rem auto 0;
     padding: 0 0.5rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0 0.25rem;
+    margin: 0.5rem auto 0;
   }
 
   /* ---------------- 1. HEADER & LEGEND ---------------- */
@@ -24,6 +29,29 @@
     margin-bottom: 1.25rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.85rem;
+      margin-bottom: 0.85rem;
+      padding-bottom: 0.85rem;
+
+      .title-and-sync {
+        align-items: center;
+        width: 100%;
+
+        .month-navigation-wrap {
+          justify-content: center;
+        }
+
+        .month-segmented-toggle {
+          justify-content: center;
+          width: 100%;
+        }
+      }
+    }
 
     .title-and-sync {
       display: flex;
@@ -147,6 +175,20 @@
         align-items: flex-start;
       }
 
+      @media (max-width: 600px) {
+        align-items: center;
+        width: 100%;
+
+        .legend-row {
+          justify-content: center;
+        }
+
+        .legend-debug-toolbar {
+          justify-content: center !important;
+          width: 100%;
+        }
+      }
+
       .legend-row {
         display: flex;
         flex-wrap: wrap;
@@ -212,13 +254,45 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      flex-wrap: wrap;
       width: 100%;
       justify-content: flex-end;
 
+      .btn-label-desktop {
+        display: inline;
+      }
+      .btn-label-mobile {
+        display: none;
+      }
+
       @media (max-width: 600px) {
-        justify-content: stretch;
-        button {
-          flex: 1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+
+        .btn-label-desktop {
+          display: none;
+        }
+        .btn-label-mobile {
+          display: inline;
+        }
+
+        .btn-calendar-add {
+          grid-column: 1 / -1;
+          justify-content: center;
+          padding: 8px 12px;
+          font-size: 0.8rem;
+        }
+
+        .btn-calendar-follow {
+          justify-content: center;
+          padding: 7px 6px;
+          font-size: 0.72rem;
+          white-space: nowrap;
+
+          &.btn-follow-full {
+            grid-column: 1 / -1;
+          }
         }
       }
 
@@ -326,9 +400,26 @@
           border-right: none;
         }
 
+        .weekday-full {
+          display: inline;
+        }
+
+        .weekday-short {
+          display: none;
+        }
+
         @media (max-width: 640px) {
-          font-size: 0.62rem;
-          padding: 4px 2px;
+          font-size: 0.65rem;
+          padding: 4px 1px;
+
+          .weekday-full {
+            display: none;
+          }
+
+          .weekday-short {
+            display: inline;
+            font-weight: 800;
+          }
         }
       }
     }
@@ -342,9 +433,8 @@
 
       .calendar-cell {
         background: #ffffff;
-        min-height: 98px;
-        aspect-ratio: 1 / 1.08;
-        padding: 5px 6px;
+        min-height: 72px;
+        padding: 4px 5px;
         display: flex;
         flex-direction: column;
         transition: background 0.15s ease;
@@ -352,7 +442,12 @@
 
         @media (max-width: 768px) {
           min-height: 52px;
-          padding: 3px 4px;
+          padding: 2px 3px;
+        }
+
+        @media (max-width: 480px) {
+          min-height: 46px;
+          padding: 2px;
         }
 
         &.cell-empty {
@@ -384,14 +479,18 @@
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 4px;
+          margin-bottom: 2px;
 
           .day-number {
             font-family: 'Cinzel', Georgia, serif;
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             font-weight: 700;
             color: #1c1917;
             line-height: 1;
+
+            @media (max-width: 600px) {
+              font-size: 0.68rem;
+            }
           }
 
           .btn-cell-quick-add {
@@ -399,10 +498,10 @@
             background: #ffedd5;
             border: 1px solid #fdba74;
             color: #c2410c;
-            width: 17px;
-            height: 17px;
+            width: 15px;
+            height: 15px;
             border-radius: 3px;
-            font-size: 0.76rem;
+            font-size: 0.70rem;
             line-height: 1;
             display: flex;
             align-items: center;
@@ -414,6 +513,10 @@
               background: #ea580c;
               color: #ffffff;
             }
+
+            @media (max-width: 600px) {
+              display: none;
+            }
           }
         }
 
@@ -421,8 +524,9 @@
         .cell-events-list {
           display: flex;
           flex-direction: column;
-          gap: 3px;
+          gap: 2px;
           flex: 1;
+          overflow: hidden;
         }
 
         .calendar-event-pill {
@@ -430,8 +534,8 @@
           flex-direction: row;
           align-items: center;
           justify-content: center;
-          gap: 4px;
-          padding: 2.5px 6px;
+          gap: 3px;
+          padding: 2px 5px;
           border-radius: 999px;
           border: 1px solid #000000;
           box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
@@ -439,45 +543,62 @@
           transition: transform 0.15s, box-shadow 0.15s;
           text-align: center;
           line-height: 1.1;
+          overflow: hidden;
 
           &:hover {
-            transform: scale(1.04);
+            transform: scale(1.03);
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
           }
 
           .pill-time-badge {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.60rem;
+            font-size: 0.58rem;
             font-weight: 800;
             opacity: 0.9;
             letter-spacing: -0.02em;
             white-space: nowrap;
+            flex-shrink: 0;
+
+            @media (max-width: 480px) {
+              display: none;
+            }
           }
 
           .pill-title-text {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.68rem;
+            font-size: 0.65rem;
             font-weight: 800;
-            letter-spacing: 0.01em;
-            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 85px;
+            white-space: nowrap;
 
-            @media (max-width: 768px) {
-              font-size: 0.58rem;
-              max-width: 50px;
+            @media (max-width: 600px) {
+              font-size: 0.55rem;
+              letter-spacing: -0.02em;
             }
           }
 
           .pill-recurring-icon {
-            font-size: 0.54rem;
-            opacity: 0.85;
+            font-size: 0.55rem;
+            flex-shrink: 0;
+
+            @media (max-width: 480px) {
+              display: none;
+            }
+          }
+
+          @media (max-width: 600px) {
+            padding: 1.5px 3px;
+            gap: 1px;
+            border-width: 0.5px;
+            border-radius: 4px;
+            box-shadow: none;
           }
         }
       }
     }
   }
+}
 
   /* ---------------- 3. MODAL BACKDROP & DIALOGS ---------------- */
   .calendar-modal-backdrop {
@@ -1409,7 +1530,6 @@
       }
     }
   }
-}
 
 @keyframes syncPulse {
   0% {
